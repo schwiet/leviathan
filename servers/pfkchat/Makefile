@@ -5,7 +5,8 @@ protoc= $(proto)/bin/protoc
 libs= -L$(proto)/lib -lprotobuf -lpthread
 incs= -I$(proto)/include
 flags= -Wall -Werror -g
-jsproto= $(proto)/html-secure/pfkchat-login-messages.js
+jsproto_login= $(proto)/html-secure/pfkchat-login-messages.js
+jsproto_full= $(proto)/html-secure/pfkchat/messages.js
 
 OBJS= WebSocketConnection.o WebSocketServer.o \
 	base64.o md5.o sha1.o pfkchat-messages.pb.o \
@@ -47,8 +48,11 @@ pfkchat-messages.pb.cc pfkchat-messages.pb.h: pfkchat-messages-all.proto vers
 	$(protoc) --cpp_out=. pfkchat-messages.proto
 	rm -f pfkchat-messages.proto
 	cpp < pfkchat-messages-all.proto | grep -v ^# > pfkchat-login-messages.proto
-	$(proto2js) pfkchat-login-messages.proto -class > $(jsproto)
-	echo "; PFK.Chat.CurrentProtoVersion = `cat vers`;" >> $(jsproto)
+	$(proto2js) pfkchat-login-messages.proto -class > $(jsproto_login)
+	echo "; PFK.Chat.CurrentProtoVersion = `cat vers`;" >> $(jsproto_login)
+	cpp -DFULL_MSG_SET < pfkchat-messages-all.proto | grep -v ^# > pfkchat-login-messages.proto
+	$(proto2js) pfkchat-login-messages.proto -class > $(jsproto_full)
+	echo "; PFK.Chat.CurrentProtoVersion = `cat vers`;" >> $(jsproto_full)
 	rm -f pfkchat-login-messages.proto
 	touch proto.stamp
 

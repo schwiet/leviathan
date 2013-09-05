@@ -11,97 +11,104 @@ var message = function(msg){
     div.scrollTop = div.scrollHeight;
 }
 
-var myuri = window.location;
-var newuri = "ws://";
-var colon = myuri.host.indexOf(":");
-if (colon == -1)
-    newuri += myuri.host;
-else
-    newuri += myuri.host.substring(0,colon);
-newuri += ":1081/websocket/thing";
-message('opening websocket to uri : ' + newuri);
+var wsuri = "";
+(function() {
+    var myuri = window.location;
+    var newuri = "wss://";
+    var colon = myuri.host.indexOf(":");
+    if (colon == -1)
+        newuri += myuri.host;
+    else
+        newuri += myuri.host.substring(0,colon);
+    newuri += "/websocket/pfkchat";
+    wsuri = newuri;
+})();
 
 var socket = null;
+var newsocket = null;
+
+var username = localStorage.PFK_Chat_Username;
+var token = localStorage.PFK_Chat_Token;
+
+get("username").value = username;
+
+message('opening websocket to uri : ' + wsuri);
+
+var server2client_handlers = {};
+
+server2client_handlers[PFK.Chat.ServerToClientType.STC_PROTOVERSION_RESP] =
+    function(stc) {
+        if (stc.protoversionresp ==
+            PFK.Chat.ProtoVersionResp.PROTO_VERSION_MATCH)
+        {
+            message('proto version match!');
+        }
+        else
+        {
+            location.assign('https://flipk.dyndns-home.com/pfkchat-login.html');
+        }
+    };
+
+server2client_handlers[PFK.Chat.ServerToClientType.STC_LOGIN_STATUS] =
+    function(stc) {
+        if (stc.loginStatus.status ==
+            PFK.Chat.LoginStatusValue.LOGIN_ACCEPT)
+        {
+            message('logged in!');
+        }
+        else
+        {
+            location.assign('https://flipk.dyndns-home.com/pfkchat-login.html');
+        }
+    };
 
 var makesocket = function () {
-
-    socket = new WebSocket(newuri);
-    socket.binaryType = "arraybuffer";
-
-    socket.onopen = function() {
+    if (newsocket)
+        return;
+    newsocket = new WebSocket(wsuri);
+    newsocket.binaryType = "arraybuffer";
+    newsocket.onopen = function() {
+        socket = newsocket;
         message('socket opened');
-        var loginMsg = new PFK.Chat.ClientToServer;
-        loginMsg.type = PFK.Chat.ClientToServerType.CTS_LOGIN;
-        loginMsg.login = new PFK.Chat.Username;
-        loginMsg.login.username = username;
-        socket.send(loginMsg.toArrayBuffer());
+        var cts = new PFK.Chat.ClientToServer;
+        cts.type = PFK.Chat.ClientToServerType.CTS_PROTOVERSION;
+        cts.protoversion = new PFK.Chat.ProtoVersion;
+        cts.protoversion.version = PFK.Chat.CurrentProtoVersion;
+        socket.send(cts.toArrayBuffer());
+        cts = new PFK.Chat.ClientToServer;
+        cts.type = PFK.Chat.ClientToServerType.CTS_LOGIN_TOKEN;
+        cts.logintoken = new PFK.Chat.LoginToken;
+        cts.logintoken.username = username;
+        cts.logintoken.token = token;
+        socket.send(cts.toArrayBuffer());
     }
-
-    socket.onclose = function() {
-        message('socket closed');
+    newsocket.onclose = function() {
         socket = null;
+        delete newsocket;
+        newsocket = null;
+        message('socket closed');
     }
-
-    socket.onmessage = function(msg){
-
-        var stcmsg = PFK.Chat.ServerToClient.decode(msg.data);
-
-        switch (stcmsg.type)
-        {
-        case PFK.Chat.ServerToClientType.STC_USER_LIST:
-            message("users currently logged in:");
-            for (var ind = 0; ind < stcmsg.userList.usernames.length; ind++)
-                message("-->" + stcmsg.userList.usernames[ind]);
-            break;
-
-        case PFK.Chat.ServerToClientType.STC_USER_STATUS:
-            // not handled
-            break;
-
-        case PFK.Chat.ServerToClientType.STC_LOGIN_NOTIFICATION:
-            message("user " + 
-                    stcmsg.notification.username +
-                    " has logged in");
-            break;
-
-        case PFK.Chat.ServerToClientType.STC_LOGOUT_NOTIFICATION:
-            message("user " + 
-                    stcmsg.notification.username +
-                    " has logged out");
-            break;
-
-        case PFK.Chat.ServerToClientType.STC_CHANGE_USERNAME:
-            message("username changed " +
-                    stcmsg.changeUsername.oldusername +
-                    " to " +
-                    stcmsg.changeUsername.newusername);
-            break;
-
-        case PFK.Chat.ServerToClientType.STC_IM_MESSAGE:
-            message(stcmsg.imMessage.username +
-                    ":" +
-                    stcmsg.imMessage.msg);
-            break;
-
-        case PFK.Chat.ServerToClientType.STC_PONG:
-            console.log("got PONG");
-            break;
-        }
+    newsocket.onmessage = function(msg){
+        var stc = PFK.Chat.ServerToClient.decode(msg.data);
+        var msgtype = stc.type;
+        if (msgtype in server2client_handlers)
+            server2client_handlers[msgtype](stc);
     }
 }
-
 makesocket();
 
 window.setInterval(
     function(){
-        if (socket)
+        if (socket == null)
         {
-            var ping = new PFK.Chat.ClientToServer();
-            ping.type = PFK.Chat.ClientToServerType.CTS_PING;
-            socket.send(ping.toArrayBuffer());
-        } else {
             message("trying to reconnect...");
             makesocket();
+        }
+        else
+        {
+            var cts = new PFK.Chat.ClientToServer;
+            cts.type = PFK.Chat.ClientToServerType.CTS_PING;
+            socket.send(cts.toArrayBuffer());
         }
     }, 10000);
 
@@ -116,30 +123,30 @@ var sendMessage = function() {
     txtbox.value = "";
 }
 
-get( "submit" ).onclick = sendMessage;
+//get( "submit" ).onclick = sendMessage;
 
-get( "entry" ).onkeypress = function(event) {
-    if (event.keyCode == '13')
-        sendMessage();
-}
+//get( "entry" ).onkeypress = function(event) {
+//    if (event.keyCode == '13')
+//        sendMessage();
+//}
 
-get( "clear" ).onclick = function() {
-    get( "messages" ).innerHTML = "";
-}
+//get( "clear" ).onclick = function() {
+//    get( "messages" ).innerHTML = "";
+//}
 
-get( "username" ).onblur = function() {
-    var newusername = get("username").value;
-    if (socket)
-    {
-        var chgMsg = new PFK.Chat.ClientToServer;
-        chgMsg.type = PFK.Chat.ClientToServerType.CTS_CHANGE_USERNAME;
-        chgMsg.changeUsername = new PFK.Chat.NewUsername;
-        chgMsg.changeUsername.oldusername = username;
-        chgMsg.changeUsername.newusername = newusername;
-        socket.send(chgMsg.toArrayBuffer());
-    }
-    username = newusername;
-}
+//get( "username" ).onblur = function() {
+//    var newusername = get("username").value;
+//    if (socket)
+//    {
+//        var chgMsg = new PFK.Chat.ClientToServer;
+//        chgMsg.type = PFK.Chat.ClientToServerType.CTS_CHANGE_USERNAME;
+//        chgMsg.changeUsername = new PFK.Chat.NewUsername;
+//        chgMsg.changeUsername.oldusername = username;
+//        chgMsg.changeUsername.newusername = newusername;
+//        socket.send(chgMsg.toArrayBuffer());
+//    }
+//    username = newusername;
+//}
 
 // Local Variables:
 // mode: Javascript

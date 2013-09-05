@@ -14,3 +14,5 @@ servers/pfkchat/pfkchat-protoversion.h
 servers/pfkchat/pfkchat_ws
 servers/pfkchat/proto.stamp
 servers/pfkchat/xmakefile
+html-secure/pfkchat/messages.js
+*~

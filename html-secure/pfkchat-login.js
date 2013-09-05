@@ -143,15 +143,12 @@ var makesocket = function() {
     newsocket.binaryType = "arraybuffer";
     newsocket.onopen = function() {
         socket = newsocket;
-        console.log("wss connection opened");
         serverStatus.innerHTML = '<span style="color:white"> SERVER UP </span>';
-
-        var protoVerMsg = new PFK.Chat.ClientToServer;
-        protoVerMsg.type = PFK.Chat.ClientToServerType.CTS_PROTOVERSION;
-        protoVerMsg.protoversion = new PFK.Chat.ProtoVersion;
-        protoVerMsg.protoversion.version = PFK.Chat.CurrentProtoVersion;
-
-        socket.send(protoVerMsg.toArrayBuffer());
+        var cts = new PFK.Chat.ClientToServer;
+        cts.type = PFK.Chat.ClientToServerType.CTS_PROTOVERSION;
+        cts.protoversion = new PFK.Chat.ProtoVersion;
+        cts.protoversion.version = PFK.Chat.CurrentProtoVersion;
+        socket.send(cts.toArrayBuffer());
     }
     newsocket.onclose = function() {
         socket = null;
@@ -179,9 +176,9 @@ window.setInterval(
         }
         else
         {
-            var ctsmsg = new PFK.Chat.ClientToServer;
-            ctsmsg.type = PFK.Chat.ClientToServerType.CTS_PING;
-            socket.send(ctsmsg.toArrayBuffer());
+            var cts = new PFK.Chat.ClientToServer;
+            cts.type = PFK.Chat.ClientToServerType.CTS_PING;
+            socket.send(cts.toArrayBuffer());
         }
     }, 10000);
 
@@ -224,7 +221,7 @@ createSubmit.onclick = function() {
     socket.send(ctsmsg.toArrayBuffer());
 }
 
-lastModified.innerHTML = "2013/09/04  23:47:47";
+lastModified.innerHTML = "2013/09/05  00:14:06";
 
 /*
 Local Variables:

@@ -139,6 +139,7 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
     if (msg.type() != CTS_PROTOVERSION &&
         msg.type() != CTS_PING &&
         msg.type() != CTS_LOGIN &&
+        msg.type() != CTS_LOGIN_TOKEN &&
         msg.type() != CTS_REGISTER &&
         authenticated == false)
     {
@@ -189,6 +190,28 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
                 pwd_db->newToken(pw);
                 srv2cli.mutable_loginstatus()->set_status( LOGIN_ACCEPT );
                 srv2cli.mutable_loginstatus()->set_token( pw->token );
+            }
+        }
+        sendClientMessage( srv2cli, false );
+        break;
+    }
+    case CTS_LOGIN_TOKEN:
+    {
+        PasswordEntry * pw = pwd_db->lookupUser(msg.logintoken().username());
+        ServerToClient  srv2cli;
+        srv2cli.set_type( STC_LOGIN_STATUS );
+        if (pw == NULL)
+        {
+            srv2cli.mutable_loginstatus()->set_status( LOGIN_REJECT );
+        }
+        else
+        {
+            if (pw->token != msg.logintoken().token())
+                srv2cli.mutable_loginstatus()->set_status( LOGIN_REJECT );
+            else
+            {
+                srv2cli.mutable_loginstatus()->set_status( LOGIN_ACCEPT );
+                authenticated = true;
             }
         }
         sendClientMessage( srv2cli, false );
