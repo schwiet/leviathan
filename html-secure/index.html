@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <title>Test Page for the Nginx HTTP Server on Fedora</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style type="text/css">
+      /*<![CDATA[*/
+            body {
+                background-color: #fff;
+                color: #000;
+                font-size: 0.9em;
+                font-family: sans-serif,helvetica;
+                margin: 0;
+                padding: 0;
+            }
+            :link {
+                color: #c00;
+            }
+            :visited {
+                color: #c00;
+            }
+            a:hover {
+                color: #f50;
+            }
+            h1 {
+                text-align: center;
+                margin: 0;
+                padding: 0.6em 2em 0.4em;
+                background-color: #294172;
+                color: #fff;
+                font-weight: normal;
+                font-size: 1.75em;
+                border-bottom: 2px solid #000;
+            }
+            h1 strong {
+                font-weight: bold;
+                font-size: 1.5em;
+            }
+            h2 {
+                text-align: center;
+                background-color: #3C6EB4;
+                font-size: 1.1em;
+                font-weight: bold;
+                color: #fff;
+                margin: 0;
+                padding: 0.5em;
+                border-bottom: 2px solid #294172;
+            }
+            hr {
+                display: none;
+            }
+            .content {
+                padding: 1em 5em;
+            }
+            .alert {
+                border: 2px solid #000;
+            }
+
+            img {
+                border: 2px solid #fff;
+                padding: 2px;
+                margin: 2px;
+            }
+            a:hover img {
+                border: 2px solid #294172;
+            }
+            .logos {
+                margin: 1em;
+                text-align: center;
+            }
+            td.name {
+                width: 50%;
+            }
+            td.green {
+                width: 50%;
+                color: green;
+                font-weight: bold;
+            }
+            td.red {
+                width: 50%;
+                color: red;
+                font-weight: bold;
+            }
+            tr:hover {
+                background: #e0e0e0;
+            }
+            table, th, td {
+                border-collapse: collapse;
+            }
+            /*]]>*/
+    </style>
+  </head>
+  <body>
+    <h1>Welcome to <strong>nginx</strong> on Fedora!</h1>
+    <div class="content">
+      <div class="alert">
+        <h2>Website Visitor</h2>
+        <div class="content">
+	  <p>Note that HTML5 and WebSockets
+	    (<a href="http://tools.ietf.org/html/rfc6455">RFC6455</a>)
+	    are required to use these sites! </p>
+	  <p>I have no intention to add support for browsers which
+	    do not have recent WebSocket support.  I've heard of AJAX, and 
+	    don't care.  Also I've tried to get 
+  <a href="http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76">
+	      hixie-76</a> (as used in Safari 5) to work, and failed.</p>
+	  <table style="width: 100%">
+	    <tr>
+	      <td class="name"> 
+		<a href="https://www.google.com/intl/en/chrome/browser/">
+		  Chrome</a> (all versions) </td>
+	      <td class="green"> TESTED OK </td>
+	    </tr><tr>
+	      <td> 
+		<a href="http://www.mozilla.org/en-US/firefox">
+		  Firefox</a> 22 or later </td>
+	      <td class="green"> TESTED OK </td>
+	    </tr><tr>
+	      <td> 
+		<a href="http://windows.microsoft.com/en-us/internet-explorer/ie-10-worldwide-languages">
+		  Internet Explorer</a> 10 or later </td>
+	      <td class="green"> TESTED OK </td>
+	    </tr><tr>
+	      <td> Safari 6 or later on iOS </td>
+	      <td class="green"> WORKS, barely tested </td>
+	    </tr><tr>
+	      <td> Safari 6 or later on Mac </td>
+	      <td class="green"> NOT TESTED, should work </td>
+	    </tr><tr>
+	      <td> IE Mobile 10 or later </td>
+	      <td class="green"> NOT TESTED, should work </td>
+	    </tr><tr>
+	      <td> Blackberry Browser (all versions) </td>
+	      <td class="green"> NOT TESTED, should work </td>
+	    </tr><tr>
+	      <td> Opera 16 or later </td>
+	      <td class="green"> NOT TESTED, should work </td>
+	    </tr><tr>
+	      <td> Internet Explorer 9 or earlier </td>
+	      <td class="red"> NOT SUPPORTED (no websockets) </td>
+	    </tr><tr>
+	      <td> Safari 5.1 or earlier </td>
+	      <td class="red"> NOT SUPPORTED (hixie-76 only) </td>
+	    </tr><tr>
+	      <td> Safari 5 or earlier on iOS </td>
+	      <td class="red"> NOT SUPPORTED </td>
+	    </tr><tr>
+	      <td> Opera Mini (all versions) </td>
+	      <td class="red"> NOT SUPPORTED </td>
+	    </tr><tr>
+	      <td> Android Browser (all versions) </td>
+	      <td class="red"> NOT SUPPORTED </td>
+	    </tr>
+	  </table>
+	  <br/>
+	  <br/>
+          <p><a href="leviathan-login.html">Leviathan BBS</a></p>
+          <p><a href="pfkchat-login.html">PFK Chat</a></p>
+        </div>
+      </div>
+      <div class="logos">
+        <a href="http://nginx.net/">
+	  <img src="nginx-logo.png" 
+	       alt="[ Powered by nginx ]"
+	       width="121" height="32" /></a>
+        <a href="http://fedoraproject.org/">
+	  <img src="poweredby.png" 
+               alt="[ Powered by Fedora ]" 
+               width="88" height="31" /></a>
+      </div>
+    </div>
+  </body>
+</html>

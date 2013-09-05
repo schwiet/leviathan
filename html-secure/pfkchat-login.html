@@ -1,0 +1,69 @@
+<html>
+  <head>
+    <title> PFKCHAT LOGIN </title>
+    <link rel="stylesheet" type="text/css" href="pfkchat-login.css" />
+  </head>
+  <body>
+    <div id="pageTitle">
+      <div style="text-align: left; float: left">
+	<span style="font-size: 3em"> pfk.org/pfkchat </span>
+      </div>
+      <div style="float: right; position: relative">
+	<span style="font-size: 2em"> pfk@pfk.org </span>
+      </div>
+    </div>
+    <div style="text-align: center">
+      [ LAST MODIFIED: <span id="lastModified"> </span>
+      | STATUS: <span id="serverStatus"> </span>
+      | PROTOVERSION: <span id="protoVersion"> </span> ]
+    </div>
+    <div id="loginCreateAccount">
+      <div class="loginCreateAccountBoxesL">
+	<h1 class="loginCreateAccountBoxTitle"> LOGIN </h1>
+	<table id="table1">
+	  <tr>
+	    <td> username: </td>
+	    <td> <input id="loginUsername" type="text"> </td>
+	  </tr><tr>
+	    <td> password: </td>
+	    <td> <input id="loginPassword" type="password"> </td>
+	  </tr><tr>
+	    <td>  </td>
+	    <td> <input id="loginSubmit" type="button" value="Login"> </td>
+	  </tr><tr>
+	    <td class="feedback" colspan=2>
+	      <span id="loginFeedback">  </span>
+	    </td> 
+	  </tr>
+	</table>
+      </div>
+      <div class="loginCreateAccountBoxesR">
+	<h1 class="loginCreateAccountBoxTitle"> CREATE ACCOUNT </h1>
+	<table id="table2">
+	  <tr>
+	    <td> choose username: </td>
+	    <td> <input id="createUsername" type="text"> </td>
+	  </tr><tr>
+	    <td> choose password: </td>
+	    <td> <input id="createPassword" type="password"> </td>
+	  </tr><tr>
+	    <td> re-type password: </td>
+	    <td> <input id="createPasswordVerify" type="password"> </td>
+	  </tr><tr>
+	    <td>  </td>
+	    <td> <input id="createSubmit" type="button" value="Login"> </td>
+	  </tr><tr>
+	    <td class="feedback" colspan=2>
+	      <span id="createFeedback">  </span>
+	    </td> 
+	  </tr>
+	</table>
+      </div>
+    </div>
+    <script src=/js/Long.js> </script>
+    <script src=/js/ByteBuffer.js> </script>
+    <script src=/js/ProtoBuf.js> </script>
+    <script src=pfkchat-login-messages.js> </script>
+    <script src=pfkchat-login.js> </script>
+  </body>
+</html>

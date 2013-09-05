@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en" ng-app="leviathanApp">
+  <head>
+    <meta charset="utf-8">
+    <title>LEVIATHAN</title>
+    <link rel="stylesheet" href="css/leviathan.css"/>
+  </head>
+  <body ng-controller="leviathanCtlr">
+
+    <div id="pageTitle">
+      <div style="text-align: left; float: left">
+        <span style="font-size: 3em"> pfk.org/leviathan </span>
+      </div>
+      <div style="float: right; position: relative">
+        <span style="font-size: 2em"> pfk@pfk.org </span>
+      </div>
+    </div>
+
+    <!-- <div class="pageNav">
+        <div style="float:left">
+          <ul class="menu">
+            <li><a href="#/view1">view1</a></li>
+            <li><a href="#/view2">view2</a></li>
+          </ul>
+        </div>
+        <div style="float:right">
+          <ul class="menu">
+            <li><a href="#/view3">view3</a></li>
+            <li><a href="#/view4">view4</a></li>
+          </ul>
+        </div>
+    </div> -->
+
+    <div style="float: left; width: 100%;">
+      <div id="leftColumn">
+        <div class="leftColumnBox">
+          <ul class="leftColumnBoxList">
+            <li> <b><u>LOGGED IN</u></b> </li>
+            <li ng-repeat="user in usersLoggedIn"> {{user.name}}  </li>
+          </ul>
+        </div>
+        <div class="leftColumnBox">
+          <ul class="leftColumnBoxList">
+            <li> <b><u>EXPRESS</u></b> </li>
+            <li ng-repeat="sess in expressSessions">
+              <span class="roomSummary-{{displayRoomRead(sess)}}">
+                {{sess.name}} {{displayRoomUnreadCount(sess)}}
+              </span>
+            </li>
+          </ul>
+        </div>
+        <div class="leftColumnBox">
+          <ul class="leftColumnBoxList">
+            <li> <b><u>ROOMS</u></b> </li>
+            <li ng-repeat="room in roomsSubscribed">
+              <span class="roomSummary-{{displayRoomRead(room)}}">
+                {{room.name}} {{displayRoomUnreadCount(room)}}
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- <div ng-view></div> -->
+      <div class="main">
+
+        <div ng-repeat="room in roomsDisplayed" class="roombox-{{displayRoomRead(room)}}">
+
+          <div style="height: 1em; border-bottom: 1px solid white">
+            <div style="height: 1em; float: left"> <b><u>{{room.name}}</u></b> </div>
+            <div style="height: 1em; float: right">
+              <span onclick="dosomething('{{room.name}}')"> X </span>
+            </div>
+          </div>
+          This is a line in a box.
+          This is a line in a box.
+          This is a line in a box.
+          This is a line in a box. 
+          This is a line in a box. 
+        </div>
+
+<!--
+        <div class="roombox-unread">
+          <b> <u> Mail </u> </b>  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+        </div>
+
+        <div class="roombox-unread">
+          <b> <u> Lobby </u> </b>  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+        </div>
+
+        <div class="roombox">
+          <b> <u> Non Sequitur </u> </b>  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+        </div>
+
+        <div class="roombox-unread">
+          <b> <u> EXPRESS bob </u> </b>  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+        </div>
+
+        <div class="roombox">
+          <b> <u> EXPRESS cre </u> </b>  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+          This is a line in a box.  <br>
+        </div>
+-->
+
+
+
+      </div>
+
+    </div>
+
+    <!-- place scripts at end so page loads faster ? -->
+
+    <script src="lib/angular/angular.js"></script>
+    <script src="js/leviathan.js"></script>
+    <script src="js/services.js"></script>
+    <script src="js/controllers.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/directives.js"></script>
+
+    <div style="clear: both">
+      <br> Last Modified: <b>2013/09/02  17:06:35</b>
+    </div>
+  </body>
+</html>
+
+<!--
+Local Variables:
+mode: html
+indent-tabs-mode: nil
+tab-width: 8
+eval: (add-hook 'write-file-hooks 'time-stamp)
+time-stamp-line-limit: -30
+time-stamp-start: "Last Modified: "
+time-stamp-format: "<b>%:y/%02m/%02d  %02H:%02M:%02S</b>"
+time-stamp-end: "$"
+End:
+  -->
