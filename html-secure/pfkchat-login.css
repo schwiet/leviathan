@@ -1,0 +1,52 @@
+
+body {
+    background: #000000;
+    color: #ffffff;
+}
+
+a {
+    color: #ffffff;
+}
+
+#pageTitle {
+    height: 4em;
+    width: 100%;
+    border-bottom: 1px solid #ffffff;
+}
+
+#loginCreateAccount {
+    margin-left:auto;
+    margin-right:auto;
+    width: 85%;
+}
+
+.loginCreateAccountBoxesL {
+    text-align: center;
+    float: left;
+    width: 45%;
+}
+
+.loginCreateAccountBoxesR {
+    text-align: center;
+    float: right;
+    width: 45%;
+}
+
+.loginCreateAccountBoxTitle {
+    border-bottom:1px solid white;
+}
+
+#table1 {
+    margin-left:auto;
+    margin-right:auto; 
+}
+
+#table2 {
+    margin-left:auto;
+    margin-right:auto; 
+}
+
+.feedback {
+    text-align: center;
+    color: red;
+}

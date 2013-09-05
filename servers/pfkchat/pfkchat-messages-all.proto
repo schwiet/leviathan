@@ -1,0 +1,72 @@
+
+package PFK.Chat;
+
+#ifdef FULL_MSG_SET
+
+#endif
+
+message ProtoVersion {
+	required int32 version = 1;
+}
+message Login {
+	required string username = 1;
+	required string password = 2;
+}
+message LoginToken {
+	required string username = 1;
+	required string token = 2;
+}
+message Register {
+	required string username = 1;
+	required string password = 2;
+}
+enum ClientToServerType {
+	CTS_PROTOVERSION = 1;     // use 'protoversion'
+	CTS_PING = 2;             // no arg
+	CTS_LOGIN = 3;            // use 'login'
+	CTS_LOGIN_TOKEN = 4;      // use 'logintoken'
+	CTS_REGISTER = 5;         // use 'register'
+}
+message ClientToServer {
+	required ClientToServerType type = 1;
+	optional ProtoVersion protoversion = 2;
+	optional Login login = 3;
+	optional LoginToken logintoken = 4;
+	optional Register regreq = 5;
+}
+
+
+enum ProtoVersionResp {
+	PROTO_VERSION_MATCH = 1;
+	PROTO_VERSION_MISMATCH = 2;
+}
+enum LoginStatusValue {
+	LOGIN_ACCEPT = 1;
+	LOGIN_REJECT = 2;
+}
+message LoginStatus {
+	required LoginStatusValue status = 1;
+	optional string token = 2;
+}
+enum RegisterStatusValue {
+	REGISTER_ACCEPT = 1;
+	REGISTER_INVALID_USERNAME = 2;
+	REGISTER_INVALID_PASSWORD = 3;
+	REGISTER_DUPLICATE_USERNAME = 4;
+}
+message RegisterStatus {
+	required RegisterStatusValue status = 1;
+	optional string token = 2;
+}
+enum ServerToClientType {
+	STC_PROTOVERSION_RESP = 1;  // use protoversionresp
+	STC_PONG = 2;               // no arg
+	STC_LOGIN_STATUS = 3;       // use loginStatus
+	STC_REGISTER_STATUS = 4;    // use registerStatus
+}
+message ServerToClient {
+	required ServerToClientType type = 1;
+	optional ProtoVersionResp protoversionresp = 2;
+	optional LoginStatus loginStatus = 3;
+	optional RegisterStatus registerStatus = 4;
+}
