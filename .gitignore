@@ -6,3 +6,11 @@ html-secure/pfkchat-login-messages.js
 /include
 /lib
 /share
+*.o
+*.d
+*.pb.cc
+*.pb.h
+servers/pfkchat/pfkchat-protoversion.h
+servers/pfkchat/pfkchat_ws
+servers/pfkchat/proto.stamp
+servers/pfkchat/xmakefile
