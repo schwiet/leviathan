@@ -18,7 +18,6 @@ var createPasswordVerify = get( "createPasswordVerify" );
 var createSubmit         = get( "createSubmit"         );
 var createFeedback       = get( "createFeedback"       );
 
-
 var wsuri = "";
 (function() {
     var myuri = window.location;
@@ -37,42 +36,105 @@ var newsocket = null;
 
 protoVersion.innerHTML = PFK.Chat.CurrentProtoVersion.toString();
 
-if (! ('localStorage' in window))
-{
-    protoVersion.innerHTML =
-        '<span style="color:red"> ' +
-        'NO LOCAL STORAGE ' +
-        '</span>';
-}
-else
-{
-    if (! ('PFK_Chat_CurrentProtoVersion' in localStorage))
+(function() {
+    if (! ('localStorage' in window))
     {
-        localStorage.PFK_Chat_CurrentProtoVersion = "";
-        protoVersion.innerHTML +=
+        protoVersion.innerHTML =
             '<span style="color:red"> ' +
-            '(added to localStorage)' +
+            'NO LOCAL STORAGE ' +
             '</span>';
     }
-    if (localStorage.PFK_Chat_CurrentProtoVersion !=
-        PFK.Chat.CurrentProtoVersion)
+    else
     {
-        protoVersion.innerHTML +=
+        if (! ('PFK_Chat_CurrentProtoVersion' in localStorage))
+        {
+            localStorage.PFK_Chat_CurrentProtoVersion = "";
+            protoVersion.innerHTML +=
             '<span style="color:red"> ' +
-            '-CHANGED' +
-            '</span>';
+                '(added to localStorage)' +
+                '</span>';
+        }
+        if (localStorage.PFK_Chat_CurrentProtoVersion !=
+            PFK.Chat.CurrentProtoVersion)
+        {
+            protoVersion.innerHTML +=
+            '<span style="color:red"> ' +
+                '-CHANGED' +
+                '</span>';
+        }
+        localStorage.PFK_Chat_CurrentProtoVersion =
+            PFK.Chat.CurrentProtoVersion;
+        if (! ('PFK_Chat_Username' in localStorage))
+            localStorage.PFK_Chat_Username = "";
+        loginUsername.value = localStorage.PFK_Chat_Username;
+        if (! ('PFK_Chat_Password' in localStorage))
+            localStorage.PFK_Chat_Password = "";
+        loginPassword.value = localStorage.PFK_Chat_Password;
     }
-    localStorage.PFK_Chat_CurrentProtoVersion = PFK.Chat.CurrentProtoVersion;
+})();
 
-    if (! ('PFK_Chat_Username' in localStorage))
-        localStorage.PFK_Chat_Username = "";
-    loginUsername.value = localStorage.PFK_Chat_Username;
+var server2client_handlers = {};
 
-    if (! ('PFK_Chat_Password' in localStorage))
-        localStorage.PFK_Chat_Password = "";
-    loginPassword.value = localStorage.PFK_Chat_Password;
+server2client_handlers[PFK.Chat.ServerToClientType.STC_PROTOVERSION_RESP] =
+    function(stc) {
+        if (stc.protoversionresp !=
+            PFK.Chat.ProtoVersionResp.PROTO_VERSION_MATCH)
+        {
+            location.reload(true);
+        }
+    };
 
-}
+server2client_handlers[PFK.Chat.ServerToClientType.STC_LOGIN_STATUS] =
+    function(stc) {
+        if (stc.loginStatus.status ==
+            PFK.Chat.LoginStatusValue.LOGIN_ACCEPT)
+        {
+            loginFeedback.innerHTML = "";
+            localStorage.PFK_Chat_Username = loginUsername.value;
+            localStorage.PFK_Chat_Password = loginPassword.value;
+            localStorage.PFK_Chat_Token = stc.loginStatus.token;
+            var newurl = 'https://' +
+                localStorage.PFK_Chat_Username + ':' +
+                localStorage.PFK_Chat_Token +
+                '@flipk.dyndns-home.com/pfkchat/';
+            location.assign(newurl);
+        }
+        else
+        {
+            loginFeedback.innerHTML = "LOGIN REJECTED";
+            localStorage.PFK_Chat_Username = "";
+            localStorage.PFK_Chat_Password = "";
+        }
+    };
+
+server2client_handlers[PFK.Chat.ServerToClientType.STC_REGISTER_STATUS] =
+    function(stc) {
+        switch (stc.registerStatus.status)
+        {
+        case PFK.Chat.RegisterStatusValue.REGISTER_INVALID_USERNAME:
+            createFeedback.innerHTML =
+                "INVALID USERNAME (only letters and numbers please)";
+            break;
+        case PFK.Chat.RegisterStatusValue.REGISTER_INVALID_PASSWORD:
+            createFeedback.innerHTML =
+                "INVALID PASSWORD (only letters and numbers please)";
+            break;
+        case PFK.Chat.RegisterStatusValue.REGISTER_DUPLICATE_USERNAME:
+            createFeedback.innerHTML =
+                "USERNAME ALREADY IN USE";
+            break;
+        case PFK.Chat.RegisterStatusValue.REGISTER_ACCEPT:
+            localStorage.PFK_Chat_Username = createUsername.value;
+            localStorage.PFK_Chat_Password = createPassword.value;
+            localStorage.PFK_Chat_Token = stc.registerStatus.token;
+            var newurl = 'https://' +
+                localStorage.PFK_Chat_Username + ':' +
+                localStorage.PFK_Chat_Token +
+                '@flipk.dyndns-home.com/pfkchat/';
+            location.assign(newurl);
+            break;
+        }
+    };
 
 var makesocket = function() {
     if (newsocket)
@@ -99,74 +161,9 @@ var makesocket = function() {
     }
     newsocket.onmessage = function(msg) {
         var stc = PFK.Chat.ServerToClient.decode(msg.data);
-        switch (stc.type)
-        {
-        case PFK.Chat.ServerToClientType.STC_PROTOVERSION_RESP:
-            if (stc.protoversionresp !=
-                PFK.Chat.ProtoVersionResp.PROTO_VERSION_MATCH)
-            {
-                console.log("got protovers resp MISMATCH");
-                location.reload(true);
-            }
-            else
-            {
-                console.log("got protovers resp MATCH");
-            }
-            break;
-
-        case PFK.Chat.ServerToClientType.STC_PONG:
-            break;
-
-        case PFK.Chat.ServerToClientType.STC_LOGIN_STATUS:
-            if (stc.loginStatus.status ==
-                PFK.Chat.LoginStatusValue.LOGIN_ACCEPT)
-            {
-                loginFeedback.innerHTML = "";
-                localStorage.PFK_Chat_Username = loginUsername.value;
-                localStorage.PFK_Chat_Password = loginPassword.value;
-                localStorage.PFK_Chat_Token = stc.loginStatus.token;
-                var newurl = 'https://' +
-                    localStorage.PFK_Chat_Username + ':' +
-                    localStorage.PFK_Chat_Token +
-                    '@flipk.dyndns-home.com/pfkchat/';
-                location.assign(newurl);
-            }
-            else
-            {
-                loginFeedback.innerHTML = "LOGIN REJECTED";
-                localStorage.PFK_Chat_Username = "";
-                localStorage.PFK_Chat_Password = "";
-            }
-            break;
-
-        case PFK.Chat.ServerToClientType.STC_REGISTER_STATUS:
-            switch (stc.registerStatus.status)
-            {
-            case PFK.Chat.RegisterStatusValue.REGISTER_INVALID_USERNAME:
-                createFeedback.innerHTML =
-                    "INVALID USERNAME (only letters and numbers please)";
-                break;
-            case PFK.Chat.RegisterStatusValue.REGISTER_INVALID_PASSWORD:
-                createFeedback.innerHTML =
-                    "INVALID PASSWORD (only letters and numbers please)";
-                break;
-            case PFK.Chat.RegisterStatusValue.REGISTER_DUPLICATE_USERNAME:
-                createFeedback.innerHTML =
-                    "USERNAME ALREADY IN USE";
-                break;
-            case PFK.Chat.RegisterStatusValue.REGISTER_ACCEPT:
-                localStorage.PFK_Chat_Username = createUsername.value;
-                localStorage.PFK_Chat_Password = createPassword.value;
-                localStorage.PFK_Chat_Token = stc.registerStatus.token;
-                var newurl = 'https://' +
-                    localStorage.PFK_Chat_Username + ':' +
-                    localStorage.PFK_Chat_Token +
-                    '@flipk.dyndns-home.com/pfkchat/';
-                location.assign(newurl);
-                break;
-            }
-            break;
-        }
+        var msgtype = stc.type;
+        if (msgtype in server2client_handlers)
+            server2client_handlers[msgtype](stc);
     }
 }
 makesocket();
@@ -227,7 +224,7 @@ createSubmit.onclick = function() {
     socket.send(ctsmsg.toArrayBuffer());
 }
 
-lastModified.innerHTML = "2013/09/04  23:03:11";
+lastModified.innerHTML = "2013/09/04  23:47:47";
 
 /*
 Local Variables:
