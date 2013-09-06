@@ -45,7 +45,7 @@ server2client_handlers[PFK.Chat.ServerToClientType.STC_PROTOVERSION_RESP] =
         }
         else
         {
-            location.assign('https://flipk.dyndns-home.com/pfkchat-login.html');
+            location.reload(true);
         }
     };
 

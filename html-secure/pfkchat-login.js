@@ -169,7 +169,7 @@ window.setInterval(
     function() {
         if (socket == null)
         {
-            serverStatus.innerHTML = "TRYING (" + wsuri + ")";
+            serverStatus.innerHTML = '<span style="color:red"> TRYING </span>';
             loginFeedback.innerHTML = "";
             createFeedback.innerHTML = "";
             makesocket();
@@ -221,7 +221,7 @@ createSubmit.onclick = function() {
     socket.send(ctsmsg.toArrayBuffer());
 }
 
-lastModified.innerHTML = "2013/09/05  00:14:06";
+lastModified.innerHTML = "2013/09/05  16:29:17";
 
 /*
 Local Variables:

@@ -21,6 +21,7 @@ PasswordDatabase :: PasswordDatabase(void)
             PasswordEntry * ent = new PasswordEntry;
             ent->username = uname;
             ent->password = passwd;
+            ent->token = tok;
             database.push_back(ent);
         }
     }
