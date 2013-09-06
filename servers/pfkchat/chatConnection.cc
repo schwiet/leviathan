@@ -48,13 +48,11 @@ myWebSocketConnection :: myWebSocketConnection(int _fd)
     clientList = this;
     unlock();
     authenticated = false;
-    strcpy(username, "guest");
+    username = "guest";
 }
 
 myWebSocketConnection :: ~myWebSocketConnection(void)
 {
-    // xxx send client logout message
-
     lock();
     if (prev)
         prev->next = next;
@@ -63,6 +61,16 @@ myWebSocketConnection :: ~myWebSocketConnection(void)
     if (next)
         next->prev = prev;
     unlock();
+
+    if (authenticated)
+    {
+        ServerToClient  stc;
+        stc.set_type( STC_USER_STATUS );
+        stc.mutable_userstatus()->set_username(username);
+        stc.mutable_userstatus()->set_status(USER_LOGGED_OUT);
+        sendClientMessage(stc,true);
+        sendUserList();
+    }
 }
 
 void
@@ -97,9 +105,27 @@ myWebSocketConnection :: sendClientMessage(const ServerToClient &outmsg,
 }
 
 void
+myWebSocketConnection :: sendUserList(void)
+{
+    ServerToClient  stc;
+    stc.set_type( STC_USER_LIST );
+    UserList * ul = stc.mutable_userlist();
+
+    lock();
+    for (myWebSocketConnection * c = clientList; c; c = c->next)
+    {
+        if (c->get_authenticated())
+            ul->add_users(c->get_username());
+    }
+    unlock();
+
+    sendClientMessage(stc,true);
+}
+
+void
 myWebSocketConnection :: onReady(void)
 {
-    // xxx
+    // xxx nothing?
 }
 
 static bool
@@ -130,20 +156,22 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
     if (msg.ParseFromString(string((char*)m.buf, (int)m.len)) == false)
     {
         cout << "ParseFromString failed!" << endl;
+        set_done();
         return;
     }
 
     if (msg.type() != CTS_PING)
         cout << "decoded message from server: " << msg.DebugString() << endl;
 
-    if (msg.type() != CTS_PROTOVERSION &&
+    if (authenticated == false &&
+        msg.type() != CTS_PROTOVERSION &&
         msg.type() != CTS_PING &&
         msg.type() != CTS_LOGIN &&
         msg.type() != CTS_LOGIN_TOKEN &&
-        msg.type() != CTS_REGISTER &&
-        authenticated == false)
+        msg.type() != CTS_REGISTER)
     {
         set_done();
+        return;
     }
 
     switch (msg.type())
@@ -211,7 +239,14 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
             else
             {
                 srv2cli.mutable_loginstatus()->set_status( LOGIN_ACCEPT );
+                username = pw->username;
                 authenticated = true;
+                ServerToClient  stc;
+                stc.set_type( STC_USER_STATUS );
+                stc.mutable_userstatus()->set_username(username);
+                stc.mutable_userstatus()->set_status(USER_LOGGED_IN);
+                sendClientMessage(stc,true);
+                sendUserList();
             }
         }
         sendClientMessage( srv2cli, false );
@@ -263,6 +298,16 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
             }
         }
         sendClientMessage( srv2cli, false );
+        break;
+    }
+    case CTS_IM_MESSAGE:
+    {
+        ServerToClient  srv2cli;
+        srv2cli.set_type( STC_IM_MESSAGE );
+        srv2cli.mutable_im()->CopyFrom(msg.im());
+        srv2cli.mutable_im()->set_username(username);
+        sendClientMessage( srv2cli, true );
+        break;
     }
     default:
         break;

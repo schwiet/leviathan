@@ -32,7 +32,7 @@ xmakefile: Makefile pfkchat-protoversion.h $(DEPS)
 .cc.d:
 	g++ $(incs) -M $*.cc > $*.d
 
-pfkchat_ws: proto.stamp $(OBJS)
+pfkchat_ws: $(OBJS)
 	g++ $(OBJS) $(libs) -o pfkchat_ws
 	rm -f vers
 
@@ -44,7 +44,7 @@ vers:
 	random_hex 7 >> vers
 
 pfkchat-messages.pb.cc pfkchat-messages.pb.h: pfkchat-messages-all.proto vers
-	cpp < pfkchat-messages-all.proto | grep -v ^# > pfkchat-messages.proto
+	cpp -DFULL_MSG_SET < pfkchat-messages-all.proto | grep -v ^# > pfkchat-messages.proto
 	$(protoc) --cpp_out=. pfkchat-messages.proto
 	rm -f pfkchat-messages.proto
 	cpp < pfkchat-messages-all.proto | grep -v ^# > pfkchat-login-messages.proto
@@ -54,7 +54,6 @@ pfkchat-messages.pb.cc pfkchat-messages.pb.h: pfkchat-messages-all.proto vers
 	$(proto2js) pfkchat-login-messages.proto -class > $(jsproto_full)
 	echo "; PFK.Chat.CurrentProtoVersion = `cat vers`;" >> $(jsproto_full)
 	rm -f pfkchat-login-messages.proto
-	touch proto.stamp
 
 .cc.o:
 	g++ $(incs) $(flags) -c $*.cc
@@ -63,5 +62,5 @@ pfkchat-messages.pb.cc pfkchat-messages.pb.h: pfkchat-messages-all.proto vers
 	gcc $(incs) $(flags) -c $*.c
 
 clean:
-	rm -f *.o *.d *.pb.cc *.pb.h proto.stamp pfkchat_ws vers *~ xmakefile
+	rm -f *.o *.d *.pb.cc *.pb.h pfkchat_ws vers *~ xmakefile
 	rm -f pfkchat-protoversion.h

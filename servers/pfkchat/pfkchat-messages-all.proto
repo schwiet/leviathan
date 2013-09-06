@@ -1,10 +1,6 @@
 
 package PFK.Chat;
 
-#ifdef FULL_MSG_SET
-
-#endif
-
 message ProtoVersion {
 	required int32 version = 1;
 }
@@ -20,12 +16,21 @@ message Register {
 	required string username = 1;
 	required string password = 2;
 }
+#ifdef FULL_MSG_SET
+message IM_Message {
+	optional string username = 1;
+	required string msg = 2;
+}
+#endif
 enum ClientToServerType {
 	CTS_PROTOVERSION = 1;     // use 'protoversion'
 	CTS_PING = 2;             // no arg
 	CTS_LOGIN = 3;            // use 'login'
 	CTS_LOGIN_TOKEN = 4;      // use 'logintoken'
 	CTS_REGISTER = 5;         // use 'register'
+#ifdef FULL_MSG_SET
+	CTS_IM_MESSAGE = 6;       // use 'im'
+#endif
 }
 message ClientToServer {
 	required ClientToServerType type = 1;
@@ -33,6 +38,9 @@ message ClientToServer {
 	optional Login login = 3;
 	optional LoginToken logintoken = 4;
 	optional Register regreq = 5;
+#ifdef FULL_MSG_SET
+	optional IM_Message im = 6;
+#endif
 }
 
 
@@ -58,15 +66,38 @@ message RegisterStatus {
 	required RegisterStatusValue status = 1;
 	optional string token = 2;
 }
+#ifdef FULL_MSG_SET
+message UserList {
+	repeated string users = 1;
+}
+enum UserStatusValue {
+	USER_LOGGED_IN = 1;
+	USER_LOGGED_OUT = 2;
+}
+message UserStatus {
+	required string username = 1;
+	required UserStatusValue status = 2;
+}
+#endif
 enum ServerToClientType {
 	STC_PROTOVERSION_RESP = 1;  // use protoversionresp
 	STC_PONG = 2;               // no arg
 	STC_LOGIN_STATUS = 3;       // use loginStatus
 	STC_REGISTER_STATUS = 4;    // use registerStatus
+#ifdef FULL_MSG_SET
+	STC_IM_MESSAGE = 5;         // use 'im'
+	STC_USER_LIST = 6;          // use 'userlist'
+	STC_USER_STATUS = 7;        // use 'userstatus'
+#endif
 }
 message ServerToClient {
 	required ServerToClientType type = 1;
 	optional ProtoVersionResp protoversionresp = 2;
 	optional LoginStatus loginStatus = 3;
 	optional RegisterStatus registerStatus = 4;
+#ifdef FULL_MSG_SET
+	optional IM_Message im = 5;
+	optional UserList userlist = 6;
+	optional UserStatus userstatus = 7;
+#endif
 }

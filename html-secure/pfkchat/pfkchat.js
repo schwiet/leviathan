@@ -1,18 +1,50 @@
 
-var get = function(id) {
-    return document.getElementById( id );
-}
+var lastModified = "2013/09/05  23:55:54";
 
-var username = get( "username" ).value;
+var app = angular.module("pfkChatApp", [])
 
-var message = function(msg){
-    var div = get( "messages" );
-    div.innerHTML = div.innerHTML + msg + '\n';
-    div.scrollTop = div.scrollHeight;
-}
+app.factory('Data', function() {
+    return {};
+})
 
-var wsuri = "";
-(function() {
+var debugThingy = {};
+var debugKey = {};
+
+function pfkChatCtlr($scope, Data) {
+    $scope.data = Data;
+    $scope.data.username = localStorage.PFK_Chat_Username;
+    $scope.data.userList = "";
+
+    if ('PFK_Chat_Messages' in localStorage)
+        $scope.data.messages = localStorage.PFK_Chat_Messages;
+    else
+        $scope.data.messages = "";
+    delete localStorage.PFK_Chat_Messages;
+
+    if ('PFK_Chat_MsgEntry' in localStorage)
+        $scope.data.msgentry = localStorage.PFK_Chat_MsgEntry;
+    else
+        $scope.data.msgentry = "";
+    delete localStorage.PFK_Chat_MsgEntry;
+
+    $scope.data.lastModified = lastModified;
+
+    $scope.setstate = function(str,color) {
+        $scope.data.connectionState = str;
+        $scope.data.connectionStateColor = color;
+    }
+
+    $scope.setstate('INITIALIZING', 'red');
+
+    $scope.token = localStorage.PFK_Chat_Token;
+
+    $scope.messagesBox = document.getElementById('messages');
+
+    $scope.message = function(msg) {
+        $scope.data.messages += msg + "\n";
+        $scope.messagesBox.scrollTop = $scope.messagesBox.scrollHeight;
+    };
+
     var myuri = window.location;
     var newuri = "wss://";
     var colon = myuri.host.indexOf(":");
@@ -21,135 +53,173 @@ var wsuri = "";
     else
         newuri += myuri.host.substring(0,colon);
     newuri += "/websocket/pfkchat";
-    wsuri = newuri;
-})();
 
-var socket = null;
-var newsocket = null;
+    $scope.wsuri = newuri;
 
-var username = localStorage.PFK_Chat_Username;
-var token = localStorage.PFK_Chat_Token;
+    $scope.socket = null;
+    $scope.newsocket = null;
 
-get("username").value = username;
+    $scope.server2client_handlers = {};
 
-message('opening websocket to uri : ' + wsuri);
+    $scope.server2client_handlers[
+        PFK.Chat.ServerToClientType.STC_PROTOVERSION_RESP] =
+        function(stc) {
+            if (stc.protoversionresp !=
+                PFK.Chat.ProtoVersionResp.PROTO_VERSION_MATCH)
+            {
+                localStorage.PFK_Chat_Messages = $scope.data.messages;
+                localStorage.PFK_Chat_MsgEntry = $scope.data.msgentry;
+                location.reload(true);
+            }
+        };
 
-var server2client_handlers = {};
+    $scope.server2client_handlers[
+        PFK.Chat.ServerToClientType.STC_LOGIN_STATUS] =
+        function(stc) {
+            if (stc.loginStatus.status ==
+                PFK.Chat.LoginStatusValue.LOGIN_ACCEPT)
+            {
+                $scope.setstate('LOGGED IN', 'white');
+            }
+            else
+            {
+                location.assign(
+                    'https://flipk.dyndns-home.com/pfkchat-login.html');
+            }
+        };
 
-server2client_handlers[PFK.Chat.ServerToClientType.STC_PROTOVERSION_RESP] =
-    function(stc) {
-        if (stc.protoversionresp ==
-            PFK.Chat.ProtoVersionResp.PROTO_VERSION_MATCH)
-        {
-            message('proto version match!');
-        }
-        else
-        {
-            location.reload(true);
-        }
+    $scope.server2client_handlers[
+        PFK.Chat.ServerToClientType.STC_IM_MESSAGE] =
+        function(stc) {
+            $scope.message( stc.im.username + ':' + stc.im.msg );
+        };
+
+    $scope.server2client_handlers[
+        PFK.Chat.ServerToClientType.STC_PONG] =
+        function(stc) {
+            //nothing
+        };
+
+    $scope.server2client_handlers[
+        PFK.Chat.ServerToClientType.STC_USER_STATUS] =
+        function(stc) {
+            var status = " did something bad";
+
+            if (stc.userstatus.status ==
+                PFK.Chat.UserStatusValue.USER_LOGGED_IN)
+            {
+                status = " logged in";
+            }
+            if (stc.userstatus.status ==
+                PFK.Chat.UserStatusValue.USER_LOGGED_OUT)
+            {
+                status = " logged out";
+            }
+            
+            $scope.message('user ' + stc.userstatus.username + 
+                           status);
+        };
+
+    $scope.server2client_handlers[
+        PFK.Chat.ServerToClientType.STC_USER_LIST] =
+        function(stc) {
+            var list = "";
+            for (userInd in stc.userlist.users) {
+                list += stc.userlist.users[userInd] + ' ';
+            }
+            $scope.data.userList = list;
+        };
+
+    $scope.makesocket = function() {
+        if ($scope.newsocket)
+            return;
+        $scope.newsocket = new WebSocket($scope.wsuri);
+        $scope.newsocket.binaryType = "arraybuffer";
+        $scope.newsocket.onopen = function() {
+            $scope.$apply(function() {
+                $scope.socket = $scope.newsocket;
+                $scope.setstate('CONNECTED', 'white');
+                var cts = new PFK.Chat.ClientToServer;
+                cts.type = PFK.Chat.ClientToServerType.CTS_PROTOVERSION;
+                cts.protoversion = new PFK.Chat.ProtoVersion;
+                cts.protoversion.version = PFK.Chat.CurrentProtoVersion;
+                $scope.socket.send(cts.toArrayBuffer());
+                cts = new PFK.Chat.ClientToServer;
+                cts.type = PFK.Chat.ClientToServerType.CTS_LOGIN_TOKEN;
+                cts.logintoken = new PFK.Chat.LoginToken;
+                cts.logintoken.username = $scope.data.username;
+                cts.logintoken.token = $scope.token;
+                $scope.socket.send(cts.toArrayBuffer());
+            })};
+        $scope.newsocket.onclose = function() {
+            $scope.$apply(function() {
+                $scope.socket = null;
+                delete $scope.newsocket;
+                $scope.newsocket = null;
+                $scope.setstate('DISCONNECTED', 'red');
+            })};
+        $scope.newsocket.onmessage = function(msg){
+            $scope.$apply(function() {
+                var stc = PFK.Chat.ServerToClient.decode(msg.data);
+                if (stc.type in $scope.server2client_handlers)
+                    $scope.server2client_handlers[stc.type](stc);
+            })
+        };
     };
 
-server2client_handlers[PFK.Chat.ServerToClientType.STC_LOGIN_STATUS] =
-    function(stc) {
-        if (stc.loginStatus.status ==
-            PFK.Chat.LoginStatusValue.LOGIN_ACCEPT)
-        {
-            message('logged in!');
-        }
-        else
-        {
-            location.assign('https://flipk.dyndns-home.com/pfkchat-login.html');
-        }
-    };
-
-var makesocket = function () {
-    if (newsocket)
-        return;
-    newsocket = new WebSocket(wsuri);
-    newsocket.binaryType = "arraybuffer";
-    newsocket.onopen = function() {
-        socket = newsocket;
-        message('socket opened');
+    $scope.sendMessage = function(msg) {
         var cts = new PFK.Chat.ClientToServer;
-        cts.type = PFK.Chat.ClientToServerType.CTS_PROTOVERSION;
-        cts.protoversion = new PFK.Chat.ProtoVersion;
-        cts.protoversion.version = PFK.Chat.CurrentProtoVersion;
-        socket.send(cts.toArrayBuffer());
-        cts = new PFK.Chat.ClientToServer;
-        cts.type = PFK.Chat.ClientToServerType.CTS_LOGIN_TOKEN;
-        cts.logintoken = new PFK.Chat.LoginToken;
-        cts.logintoken.username = username;
-        cts.logintoken.token = token;
-        socket.send(cts.toArrayBuffer());
+        cts.type = PFK.Chat.ClientToServerType.CTS_IM_MESSAGE;
+        cts.im = new PFK.Chat.IM_Message;
+        cts.im.msg = msg;
+        $scope.socket.send(cts.toArrayBuffer());
     }
-    newsocket.onclose = function() {
-        socket = null;
-        delete newsocket;
-        newsocket = null;
-        message('socket closed');
-    }
-    newsocket.onmessage = function(msg){
-        var stc = PFK.Chat.ServerToClient.decode(msg.data);
-        var msgtype = stc.type;
-        if (msgtype in server2client_handlers)
-            server2client_handlers[msgtype](stc);
-    }
-}
-makesocket();
 
-window.setInterval(
-    function(){
-        if (socket == null)
-        {
-            message("trying to reconnect...");
-            makesocket();
-        }
-        else
-        {
-            var cts = new PFK.Chat.ClientToServer;
-            cts.type = PFK.Chat.ClientToServerType.CTS_PING;
-            socket.send(cts.toArrayBuffer());
-        }
-    }, 10000);
+    $scope.makesocket();
 
-var sendMessage = function() {
-    var txtbox = get( "entry" );
-    var im = new PFK.Chat.ClientToServer;
-    im.type = PFK.Chat.ClientToServerType.CTS_IM_MESSAGE;
-    im.imMessage = new PFK.Chat.IM_Message;
-    im.imMessage.username = username;
-    im.imMessage.msg = txtbox.value;
-    socket.send(im.toArrayBuffer());
-    txtbox.value = "";
+    window.setInterval(function() {
+        $scope.$apply(function() {
+            if ($scope.socket == null)
+            {
+                $scope.setstate('TRYING', 'yellow');
+                $scope.makesocket();
+            }
+            else
+            {
+                var cts = new PFK.Chat.ClientToServer;
+                cts.type = PFK.Chat.ClientToServerType.CTS_PING;
+                $scope.socket.send(cts.toArrayBuffer());
+            }
+        })}, 10000);
+
+    $scope.msgentryKeyup = function(evt) {
+        if (evt.which == 13) // return key
+        {
+            $scope.sendMessage($scope.data.msgentry);
+            $scope.data.msgentry = "";
+        }
+    };
+
+    $scope.clearButton = function() {
+        $scope.data.messages = "";
+    };
+
+    document.getElementById('msgentry').onkeyup = function(evt) {
+        $scope.$apply($scope.msgentryKeyup(evt))
+    };
+
+    debugThingy = $scope;
 }
 
-//get( "submit" ).onclick = sendMessage;
-
-//get( "entry" ).onkeypress = function(event) {
-//    if (event.keyCode == '13')
-//        sendMessage();
-//}
-
-//get( "clear" ).onclick = function() {
-//    get( "messages" ).innerHTML = "";
-//}
-
-//get( "username" ).onblur = function() {
-//    var newusername = get("username").value;
-//    if (socket)
-//    {
-//        var chgMsg = new PFK.Chat.ClientToServer;
-//        chgMsg.type = PFK.Chat.ClientToServerType.CTS_CHANGE_USERNAME;
-//        chgMsg.changeUsername = new PFK.Chat.NewUsername;
-//        chgMsg.changeUsername.oldusername = username;
-//        chgMsg.changeUsername.newusername = newusername;
-//        socket.send(chgMsg.toArrayBuffer());
-//    }
-//    username = newusername;
-//}
-
-// Local Variables:
-// mode: Javascript
-// indent-tabs-mode: nil
-// tab-width: 4
-// End:
+/*
+Local Variables:
+mode: javascript
+indent-tabs-mode: nil
+tab-width: 8
+eval: (add-hook 'write-file-hooks 'time-stamp)
+time-stamp-line-limit: 5
+time-stamp-start: "lastModified = \""
+time-stamp-format: "%:y/%02m/%02d  %02H:%02M:%02S\";"
+time-stamp-end: "$"
+End:
+*/

@@ -4,7 +4,7 @@
     <title>PFK CHAT</title>
     <link rel="stylesheet" type="text/css" href="pfkchat.css" />
   </head>
-  <body>
+  <body ng-app="pfkChatApp">
     <div id="pageTitle">
       <div style="text-align: left; float: left">
         <span style="font-size: 3em"> pfk.org/pfkchat </span>
@@ -13,15 +13,24 @@
         <span style="font-size: 2em"> pfk@pfk.org </span>
       </div>
     </div>
-    <input type="text" id="username" value="guest" />
-    <input type="text" id="entry" autofocus />
-    <input type="button" id="submit" value="submit" />
-    <input type="button" id="clear" value="clear" />
-    <p> Messages: </p>
-    <textarea id="messages" rows=10 cols=80></textarea>
+    <div ng-controller="pfkChatCtlr">
+      LAST MODIFIED: {{data.lastModified}}
+      STATE: <span style="color:{{data.connectionStateColor}}">
+	{{data.connectionState}}</span> <br/>
+      {{data.username}}: 
+	     <!-- this doesn't work! ng-keyup="msgentryKeyup()" -->
+      <input ng-model="data.msgentry" id="msgentry" type="text"
+	     autofocus size=70 />
+      <input type="button" value="clear" ng-click="clearButton()"/>
+      <p> Users: {{data.userList}}  </p>
+      <p> Messages: </p>
+      <textarea id="messages" ng-model="data.messages" rows=10 cols=80 >
+      </textarea>
+    </div>
     <script src=/js/Long.js> </script>
     <script src=/js/ByteBuffer.js> </script>
     <script src=/js/ProtoBuf.js> </script>
+    <script src=/js/angular.min.js> </script>
     <script src=messages.js> </script>
     <script src=pfkchat.js> </script>
   </body>
