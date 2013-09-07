@@ -1,9 +1,11 @@
 
-var lastModified = "2013/09/07  00:13:31";
+var lastModified = "2013/09/07  01:47:36";
 
 angular.module("pfkChatApp", [])
     .factory('Data', pfkChatDataModel)
-    .controller('pfkChatCtlr', ['$scope', 'Data', pfkChatCtlr]);
+    .factory('webSocket', webSocketService)
+    .controller('pfkChatCtlr', ['$scope', 'Data',
+                                'webSocket', pfkChatCtlr]);
 
 /*
   Local Variables:
