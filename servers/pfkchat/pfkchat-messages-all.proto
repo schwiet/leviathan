@@ -21,6 +21,14 @@ message IM_Message {
 	optional string username = 1;
 	required string msg = 2;
 }
+enum TypingState {
+	STATE_EMPTY = 1;
+	STATE_TYPING = 2;
+	STATE_ENTERED_TEXT = 3;
+}
+message TypingInd {
+	required TypingState state = 1;
+}
 #endif
 enum ClientToServerType {
 	CTS_PROTOVERSION = 1;     // use 'protoversion'
@@ -30,6 +38,7 @@ enum ClientToServerType {
 	CTS_REGISTER = 5;         // use 'register'
 #ifdef FULL_MSG_SET
 	CTS_IM_MESSAGE = 6;       // use 'im'
+	CTS_TYPING_IND = 7;       // use 'typing'
 #endif
 }
 message ClientToServer {
@@ -40,6 +49,7 @@ message ClientToServer {
 	optional Register regreq = 5;
 #ifdef FULL_MSG_SET
 	optional IM_Message im = 6;
+	optional TypingInd typing = 7;
 #endif
 }
 
@@ -67,8 +77,12 @@ message RegisterStatus {
 	optional string token = 2;
 }
 #ifdef FULL_MSG_SET
+message UserInfo {
+	required TypingState typing = 1;
+	required string username = 2;
+}
 message UserList {
-	repeated string users = 1;
+	repeated UserInfo users = 1;
 }
 enum UserStatusValue {
 	USER_LOGGED_IN = 1;

@@ -1,5 +1,5 @@
 
-var lastModified = "2013/09/05  23:55:54";
+var lastModified = "2013/09/06  20:51:04";
 
 var app = angular.module("pfkChatApp", [])
 
@@ -13,7 +13,7 @@ var debugKey = {};
 function pfkChatCtlr($scope, Data) {
     $scope.data = Data;
     $scope.data.username = localStorage.PFK_Chat_Username;
-    $scope.data.userList = "";
+    $scope.data.userList = [];
 
     if ('PFK_Chat_Messages' in localStorage)
         $scope.data.messages = localStorage.PFK_Chat_Messages;
@@ -80,6 +80,7 @@ function pfkChatCtlr($scope, Data) {
                 PFK.Chat.LoginStatusValue.LOGIN_ACCEPT)
             {
                 $scope.setstate('LOGGED IN', 'white');
+                $scope.sendTypingInd($scope.stateEmpty);
             }
             else
             {
@@ -123,11 +124,13 @@ function pfkChatCtlr($scope, Data) {
     $scope.server2client_handlers[
         PFK.Chat.ServerToClientType.STC_USER_LIST] =
         function(stc) {
-            var list = "";
+            $scope.data.userList = [];
             for (userInd in stc.userlist.users) {
-                list += stc.userlist.users[userInd] + ' ';
+                var user = stc.userlist.users[userInd];
+                $scope.data.userList.push(
+                    { name : user.username,
+                      typing : user.typing });
             }
-            $scope.data.userList = list;
         };
 
     $scope.makesocket = function() {
@@ -175,6 +178,46 @@ function pfkChatCtlr($scope, Data) {
         $scope.socket.send(cts.toArrayBuffer());
     }
 
+    $scope.stateEmpty = PFK.Chat.TypingState.STATE_EMPTY;
+    $scope.stateTyping = PFK.Chat.TypingState.STATE_TYPING;
+    $scope.stateEntered = PFK.Chat.TypingState.STATE_ENTERED_TEXT;
+
+    (function() {
+        var lastSent = null;
+        $scope.sendTypingInd = function(state) {
+            if (lastSent == null || lastSent != state)
+            {
+                var cts = new PFK.Chat.ClientToServer;
+                cts.type = PFK.Chat.ClientToServerType.CTS_TYPING_IND;
+                cts.typing = new PFK.Chat.TypingInd;
+                cts.typing.state = state;
+                $scope.socket.send(cts.toArrayBuffer());
+            }
+            lastSent = state;
+        }
+    })();
+
+    $scope.msgentryKeyup = function(evt) {
+        if (evt.which == 13) // return key
+        {
+            $scope.sendMessage($scope.data.msgentry);
+            $scope.data.msgentry = "";
+            $scope.sendTypingInd($scope.stateEmpty);
+        }
+        else
+        {
+            if ($scope.data.msgentry.length > 0)
+                $scope.sendTypingInd($scope.stateTyping);
+            else
+                $scope.sendTypingInd($scope.stateEmpty);
+            //            $scope.sendTypingInd($scope.stateEnteredText);
+        }
+    }
+
+    document.getElementById('msgentry').onkeyup = function(evt) {
+        $scope.$apply($scope.msgentryKeyup(evt))
+    };
+
     $scope.makesocket();
 
     window.setInterval(function() {
@@ -192,20 +235,9 @@ function pfkChatCtlr($scope, Data) {
             }
         })}, 10000);
 
-    $scope.msgentryKeyup = function(evt) {
-        if (evt.which == 13) // return key
-        {
-            $scope.sendMessage($scope.data.msgentry);
-            $scope.data.msgentry = "";
-        }
-    };
 
     $scope.clearButton = function() {
         $scope.data.messages = "";
-    };
-
-    document.getElementById('msgentry').onkeyup = function(evt) {
-        $scope.$apply($scope.msgentryKeyup(evt))
     };
 
     debugThingy = $scope;

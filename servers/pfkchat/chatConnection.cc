@@ -48,6 +48,7 @@ myWebSocketConnection :: myWebSocketConnection(int _fd)
     clientList = this;
     unlock();
     authenticated = false;
+    typing = STATE_EMPTY;
     username = "guest";
 }
 
@@ -115,7 +116,11 @@ myWebSocketConnection :: sendUserList(void)
     for (myWebSocketConnection * c = clientList; c; c = c->next)
     {
         if (c->get_authenticated())
-            ul->add_users(c->get_username());
+        {
+            UserInfo * ui = ul->add_users();
+            ui->set_username(c->get_username());
+            ui->set_typing(c->get_typing());
+        }
     }
     unlock();
 
@@ -307,6 +312,12 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
         srv2cli.mutable_im()->CopyFrom(msg.im());
         srv2cli.mutable_im()->set_username(username);
         sendClientMessage( srv2cli, true );
+        break;
+    }
+    case CTS_TYPING_IND:
+    {
+        typing = msg.typing().state();
+        sendUserList();
         break;
     }
     default:

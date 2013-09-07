@@ -14,65 +14,59 @@ a {
     border-bottom: 1px solid #ffffff;
 }
 
-.roombox-read {
+.leftColumn {
+    width: 140px;
+    height: 10em;
     float: left;
-    border: 1px solid white;
-    margin-top: 5px;
-    margin-right: 4px;
-    padding: 5px; 
-    max-width: 180px;
+    padding: 10px;
 }
 
-.roombox-unread {
-    float: left;
-    border: 1px solid red;
-    margin-top: 5px;
-    margin-right: 4px;
-    padding: 5px; 
-}
-
-.pageNav {
-    width: 100%;
-    height: 2em;
-    padding: 0 0 0 0;
-    margin: 0 0 0 0;
-}
-
-#leftColumn {
-/*    width: 130px; */
-    max-width: 180px;
-    width: 20%;
-    float: left;
-}
-
-.leftColumnBox {
-    margin-top: 0px;
-    margin-right: 4px;
-    padding: 5px;
-    border: 1px solid #ffffff;
-    margin-top: 5px;
-}
-
-.leftColumnBoxList {
+.userList {
     list-style: none;
-    padding: 0 0 0 0;
+    padding: 10px 0 0 0;
     -webkit-margin-before: 0em;
     -webkit-margin-after: 0em;
     -webkit-padding-start: 0;
     line-height: 1em;
 }
-
-.roomSummary-unread {
-    font-weight: bold;
-    color: red;
+.userListHeader {
+    font-size: 24px;
+    margin: 5px;
+    padding: 5px;
+    border-radius: 5px;
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
 }
-
-.roomSummary-read {
+.userListName {
+    font-size: 18px;
+    background: #404040;
+    margin: 5px;
+    padding: 5px;
+    border-radius: 5px;
+    border-top: 1px solid white;
 }
-
-.main {
-    width: 80%;
-    float: left;
+.userListName {
+    font-size: 18px;
+    background: #404040;
+    margin: 5px;
+    padding: 5px;
+    border-radius: 5px;
+}
+.userListName:hover {
+    font-size: 20px;
+    background: #505050;
+    margin: 5px;
+    padding: 5px;
+    border-radius: 5px;
+}
+.userListName-1 {
+    color: white;
+}
+.userListName-2 {
+    color: yellow;
+}
+.userListName-2:after {
+    content: " (typing)";
 }
 
 .menu {

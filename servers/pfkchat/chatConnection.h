@@ -4,6 +4,7 @@
 #define __CHAT_CONNECTION_H__ 1
 
 #include <string>
+#include "pfkchat-messages.pb.h"
 
 void initChatServer(void);
 
@@ -12,11 +13,13 @@ class myWebSocketConnection : public WebSocketConnection {
     class myWebSocketConnection * prev;
     std::string username;
     bool authenticated;
+    PFK::Chat::TypingState typing;
     void sendClientMessage(const PFK::Chat::ServerToClient &msg,
                            bool broadcast);
     void sendUserList(void);
 public:
     const bool get_authenticated(void) const { return authenticated; }
+    const PFK::Chat::TypingState get_typing(void) { return typing; }
     const std::string& get_username(void) const { return username; };
     myWebSocketConnection(int _fd);
     /*virtual*/ ~myWebSocketConnection(void);

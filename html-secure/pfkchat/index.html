@@ -14,18 +14,34 @@
       </div>
     </div>
     <div ng-controller="pfkChatCtlr">
-      LAST MODIFIED: {{data.lastModified}}
-      STATE: <span style="color:{{data.connectionStateColor}}">
-	{{data.connectionState}}</span> <br/>
-      {{data.username}}: 
-	     <!-- this doesn't work! ng-keyup="msgentryKeyup()" -->
-      <input ng-model="data.msgentry" id="msgentry" type="text"
-	     autofocus size=70 />
-      <input type="button" value="clear" ng-click="clearButton()"/>
-      <p> Users: {{data.userList}}  </p>
-      <p> Messages: </p>
-      <textarea id="messages" ng-model="data.messages" rows=10 cols=80 >
-      </textarea>
+      <table>
+	<tr>
+	  <td style="width: 140px; vertical-align:top">
+	    <ul class="userList">
+	      <li class="userListHeader">
+		Users:
+	      </li>
+	      <li ng-repeat="user in data.userList"
+		  class="userListName userListName-{{user.typing}}">
+		{{user.name}}
+	      </li>
+	    </ul>
+	  </td> <td style="vertical-align:top">
+	    LAST MODIFIED: {{data.lastModified}} <br/>
+	    STATE: <span style="color:{{data.connectionStateColor}}">
+	      {{data.connectionState}}</span> <br/>
+	    {{data.username}}: 
+	    <!-- this doesn't work! ng-keyup="msgentryKeyup()" -->
+	    <input ng-model="data.msgentry" id="msgentry" type="text"
+		   autofocus size=70 />
+	    <input type="button" value="clear" ng-click="clearButton()"/>
+	    
+	    <textarea id="messages" ng-model="data.messages"
+		      rows=10 cols=80 >
+	    </textarea>
+	  </td>
+	</tr>
+      </table>
     </div>
     <script src=/js/Long.js> </script>
     <script src=/js/ByteBuffer.js> </script>
