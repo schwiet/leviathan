@@ -106,6 +106,11 @@ var pfkChatCtlr = function($scope, depData, depWebSocket) {
     $scope.msgentryKeyup = function(key) {
         if (key.which == 13) // return key
         {
+
+            if ($scope.data.msgentry == "switch")
+                location.replace("#/login.view");
+
+
             $scope.sendMessage($scope.data.msgentry);
             $scope.data.msgentry = "";
             $scope.sendTypingInd($scope.stateEmpty);

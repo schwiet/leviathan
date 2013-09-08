@@ -1,11 +1,36 @@
 
-var lastModified = "2013/09/07  01:47:36";
+'use strict';
 
-angular.module("pfkChatApp", [])
+var lastModified = "2013/09/07  22:45:59";
+
+angular.module("pfkChatApp.services", [])
     .factory('Data', pfkChatDataModel)
-    .factory('webSocket', webSocketService)
+    .factory('webSocket', webSocketService);
+
+angular.module("pfkChatApp.controllers", [])
     .controller('pfkChatCtlr', ['$scope', 'Data',
-                                'webSocket', pfkChatCtlr]);
+                                'webSocket', pfkChatCtlr])
+    .controller('pfkChatLoginCtlr', ['$scope', 'Data',
+                                     'webSocket', pfkChatLoginCtlr]);
+
+// could also have directives and filters here
+
+angular.module('pfkChatApp', ['pfkChatApp.services',
+                              'pfkChatApp.controllers',
+                              'ngRoute'])
+    .config(['$routeProvider', function($routeProvider,
+                                        $locationProvider) {
+        $routeProvider.when('/chat.view', {
+            templateUrl: 'views/chat.html',
+            controller: 'pfkChatCtlr'
+        });
+        $routeProvider.when('/login.view', {
+            templateUrl: 'views/login.html',
+            controller: 'pfkChatLoginCtlr'
+        });
+        $routeProvider.otherwise({redirectTo: '/chat.view'});
+//        $locationProvider.html5Mode(true);
+    }]);
 
 /*
   Local Variables:

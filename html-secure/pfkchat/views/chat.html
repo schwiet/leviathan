@@ -1,0 +1,26 @@
+<table>
+  <tr>
+    <td style="width: 140px; vertical-align:top">
+      <ul class="userList">
+	<li class="userListHeader">
+	  Users:
+	</li>
+	<li ng-repeat="user in data.userList"
+	    class="userListName userListName-{{user.typing}}">
+	  {{user.name}}
+	</li>
+      </ul>
+    </td> <td style="vertical-align:top">
+      STATE: <span style="color:{{data.connectionStateColor}}">
+	{{data.connectionState}}</span> <br/>
+      {{data.username}}: 
+      <input ng-keyup="msgentryKeyup($event)"
+	     ng-model="data.msgentry" type="text"
+	     autofocus size=70 />
+      <input type="button" value="clear" ng-click="clearButton()"/>
+      <textarea id="messages" ng-model="data.messages"
+		rows=10 cols=80 >
+      </textarea>
+    </td>
+  </tr>
+</table>
