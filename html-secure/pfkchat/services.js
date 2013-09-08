@@ -34,12 +34,11 @@ var webSocketService = function() {
 
         // user reads or calls, but does not write these.
 
-        socket : null,
-        start : null,
         send : null,
 
         // below this line, internal.
 
+        socket : null,
         handlers : [],
         makesocket : null,
         newsocket : null,
@@ -157,7 +156,7 @@ var webSocketService = function() {
             console.log('websocket did not send: not connected');
     }
 
-    ret.start = function() {
+    window.setTimeout(function() {
         ret.makesocket();
         window.setInterval(function() {
             if (ret.socket == null)
@@ -175,9 +174,7 @@ var webSocketService = function() {
                 ret.send(cts);
             }
         }, 3000);
-    };
-
-    window.setTimeout(ret.start, 100);
+    }, 100);
 
     return ret;
 }
