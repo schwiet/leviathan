@@ -1,7 +1,7 @@
 
 'use strict';
 
-var lastModified = "2013/09/07  23:31:49";
+var lastModified = "2013/09/08  01:07:28";
 
 angular.module("pfkChatApp.services", [])
     .factory('Data', pfkChatDataModel)
@@ -23,11 +23,11 @@ angular.module('pfkChatApp', ['pfkChatApp.services',
     .config(['$routeProvider', function($routeProvider,
                                         $locationProvider) {
         $routeProvider.when('/chat.view', {
-            templateUrl: 'views/chat.html',
+            templateUrl: 'chat.html',
             controller: 'pfkChatCtlr'
         });
         $routeProvider.when('/login.view', {
-            templateUrl: 'views/login.html',
+            templateUrl: 'login.html',
             controller: 'pfkChatLoginCtlr'
         });
         $routeProvider.otherwise({redirectTo: '/chat.view'});
