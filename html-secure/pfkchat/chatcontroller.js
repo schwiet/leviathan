@@ -103,8 +103,8 @@ var pfkChatCtlr = function($scope, depData, depWebSocket) {
         }
     })();
 
-    $scope.msgentryKeyup = function(evt) {
-        if (evt.which == 13) // return key
+    $scope.msgentryKeyup = function(key) {
+        if (key.which == 13) // return key
         {
             $scope.sendMessage($scope.data.msgentry);
             $scope.data.msgentry = "";
@@ -120,13 +120,9 @@ var pfkChatCtlr = function($scope, depData, depWebSocket) {
         }
     }
 
-    document.getElementById('msgentry').onkeyup = function(evt) {
-        $scope.$apply($scope.msgentryKeyup(evt))
-    };
-
     $scope.clearButton = function() {
         $scope.data.messages = "";
-    };
+    }
 
     debugThingy = $scope;
 };

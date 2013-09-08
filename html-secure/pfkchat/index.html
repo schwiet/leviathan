@@ -30,8 +30,8 @@
 	    STATE: <span style="color:{{data.connectionStateColor}}">
 	      {{data.connectionState}}</span> <br/>
 	    {{data.username}}: 
-	    <!-- this doesn't work! ng-keyup="msgentryKeyup()" -->
-	    <input ng-model="data.msgentry" id="msgentry" type="text"
+	    <input ng-keyup="msgentryKeyup($event)"
+		   ng-model="data.msgentry" type="text"
 		   autofocus size=70 />
 	    <input type="button" value="clear" ng-click="clearButton()"/>
 	    
@@ -45,7 +45,7 @@
     <script src=/js/Long.js> </script>
     <script src=/js/ByteBuffer.js> </script>
     <script src=/js/ProtoBuf.js> </script>
-    <script src=/js/angular.min.js> </script>
+    <script src=/js/angular-1.2.0/angular.js> </script>
     <script src=messages.js> </script>
     <script src=chatcontroller.js> </script>
     <script src=services.js> </script>
