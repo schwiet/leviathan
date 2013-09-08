@@ -1,17 +1,19 @@
 
 'use strict';
 
-var lastModified = "2013/09/07  22:45:59";
+var lastModified = "2013/09/07  23:31:49";
 
 angular.module("pfkChatApp.services", [])
     .factory('Data', pfkChatDataModel)
     .factory('webSocket', webSocketService);
 
 angular.module("pfkChatApp.controllers", [])
-    .controller('pfkChatCtlr', ['$scope', 'Data',
-                                'webSocket', pfkChatCtlr])
-    .controller('pfkChatLoginCtlr', ['$scope', 'Data',
-                                     'webSocket', pfkChatLoginCtlr]);
+    .controller('wsStatusCtlr', ['$scope', 'webSocket',
+                                 wsStatusCtlr])
+    .controller('pfkChatCtlr', ['$scope', 'Data', 'webSocket',
+                                pfkChatCtlr])
+    .controller('pfkChatLoginCtlr', ['$scope', 'Data', 'webSocket',
+                                     pfkChatLoginCtlr]);
 
 // could also have directives and filters here
 

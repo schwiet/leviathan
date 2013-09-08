@@ -6,13 +6,7 @@ var pfkChatDataModel = function() {
         messages : ('PFK_Chat_Messages' in localStorage) ? 
             localStorage.PFK_Chat_Messages : "",
         msgentry : ('PFK_Chat_MsgEntry' in localStorage) ?
-            localStorage.PFK_Chat_MsgEntry : "",
-        connectionState : "",
-        connectionStateColor : "",
-        setstate : function(str,color) {
-            this.connectionState = str;
-            this.connectionStateColor = color;
-        }
+            localStorage.PFK_Chat_MsgEntry : ""
     };
     delete localStorage.PFK_Chat_Messages;
     delete localStorage.PFK_Chat_MsgEntry;
@@ -23,11 +17,10 @@ var webSocketService = function() {
     var ret = {
         // user fills these in.
 
+        onStatusChange : null,
         onReload : null,
         onLoginSuccess : null,
         onConnect : null,
-        onDisconnect : null,
-        onTrying : null,
         onUserList : null,
         onIm : null,
         onUserStatus : null,
@@ -67,6 +60,10 @@ var webSocketService = function() {
             else
             {
                 ret.socket = ret.newsocket;
+                if (ret.onStatusChange)
+                    ret.onStatusChange('CONNECTED','white');
+                else
+                    console.log('no onStatusChange installed');
                 if (ret.onConnect)
                     ret.onConnect();
                 else
@@ -79,10 +76,14 @@ var webSocketService = function() {
             if (stc.loginStatus.status ==
                 PFK.Chat.LoginStatusValue.LOGIN_ACCEPT)
             {
+                if (ret.onStatusChange)
+                    ret.onStatusChange('LOGGED IN','white');
+                else
+                    console.log('no onStatusChange attached');
                 if (ret.onLoginSuccess)
                     ret.onLoginSuccess();
                 else
-                    console.log('no onLoginSuccess attached');
+                    console.log('no onLoginSuccess installed');
             }
             else
             {
@@ -137,10 +138,11 @@ var webSocketService = function() {
             ret.socket = null;
             delete ret.newsocket;
             ret.newsocket = null;
-            if (ret.onDisconnect)
-                ret.onDisconnect();
+            if (ret.onStatusChange)
+                ret.onStatusChange('DISCONNECTED','red');
             else
-                console.log('no onDisconnect installed');
+                console.log('no onStatusChange installed');
+            console.log('disconnected!');
         };
         ret.newsocket.onmessage = function(msg){
             var stc = PFK.Chat.ServerToClient.decode(msg.data);
@@ -161,10 +163,10 @@ var webSocketService = function() {
         window.setInterval(function() {
             if (ret.socket == null)
             {
-                if (ret.onTrying)
-                    ret.onTrying();
+                if (ret.onStatusChange)
+                    ret.onStatusChange('TRYING','yellow');
                 else
-                    console.log('no onTrying installed');
+                    console.log('no onStatusChange installed');
                 ret.makesocket();
             }
             else

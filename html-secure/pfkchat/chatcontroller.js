@@ -2,7 +2,6 @@
 var pfkChatCtlr = function($scope, depData, depWebSocket) {
     $scope.data = depData;
     $scope.webSocket = depWebSocket;
-    $scope.data.setstate('INITIALIZING', 'red');
     $scope.token = localStorage.PFK_Chat_Token;
 
     $scope.messagesBox = document.getElementById('messages');
@@ -19,29 +18,17 @@ var pfkChatCtlr = function($scope, depData, depWebSocket) {
 
     $scope.webSocket.onLoginSuccess = function() {
         $scope.$apply(function() {
-            $scope.data.setstate('LOGGED IN', 'white');
             $scope.sendTypingInd($scope.stateEmpty);
         })}
 
     $scope.webSocket.onConnect = function() {
         $scope.$apply(function() {
-            $scope.data.setstate('CONNECTED', 'white');
             var cts = new PFK.Chat.ClientToServer;
             cts.type = PFK.Chat.ClientToServerType.CTS_LOGIN_TOKEN;
             cts.logintoken = new PFK.Chat.LoginToken;
             cts.logintoken.username = $scope.data.username;
             cts.logintoken.token = $scope.token;
             $scope.webSocket.send(cts);
-        })}
-
-    $scope.webSocket.onDisconnect = function() {
-        $scope.$apply(function() {
-            $scope.data.setstate('DISCONNECTED', 'red');
-        })}
-
-    $scope.webSocket.onTrying = function() {
-        $scope.$apply(function() {
-            $scope.data.setstate('TRYING', 'yellow');
         })}
 
     $scope.webSocket.onUserList = function(userList) {
