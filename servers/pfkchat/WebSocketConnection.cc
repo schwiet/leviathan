@@ -51,6 +51,8 @@ WebSocketConnection :: connection_thread_main(void)
         int cc = read(fd, buf + bufsize, maxbufsize - bufsize);
         if (cc < 0)
             fprintf(stderr, "read : %s\n", strerror(errno));
+        if (cc == 0)
+            fprintf(stderr, "read: end of data stream\n");
         if (cc <= 0)
             break;
 

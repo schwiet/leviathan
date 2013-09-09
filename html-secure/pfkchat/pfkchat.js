@@ -1,14 +1,14 @@
 
 'use strict';
 
-var lastModified = "2013/09/08  01:07:28";
+var lastModified = "2013/09/08  22:46:46";
 
 angular.module("pfkChatApp.services", [])
     .factory('Data', pfkChatDataModel)
     .factory('webSocket', webSocketService);
 
 angular.module("pfkChatApp.controllers", [])
-    .controller('wsStatusCtlr', ['$scope', 'webSocket',
+    .controller('wsStatusCtlr', ['$scope', 'Data', 'webSocket',
                                  wsStatusCtlr])
     .controller('pfkChatCtlr', ['$scope', 'Data', 'webSocket',
                                 pfkChatCtlr])
@@ -20,18 +20,12 @@ angular.module("pfkChatApp.controllers", [])
 angular.module('pfkChatApp', ['pfkChatApp.services',
                               'pfkChatApp.controllers',
                               'ngRoute'])
-    .config(['$routeProvider', function($routeProvider,
-                                        $locationProvider) {
+    .config(['$routeProvider', function($routeProvider) {
         $routeProvider.when('/chat.view', {
-            templateUrl: 'chat.html',
-            controller: 'pfkChatCtlr'
-        });
+            templateUrl: 'chat.html',  controller: 'pfkChatCtlr'      });
         $routeProvider.when('/login.view', {
-            templateUrl: 'login.html',
-            controller: 'pfkChatLoginCtlr'
-        });
-        $routeProvider.otherwise({redirectTo: '/chat.view'});
-//        $locationProvider.html5Mode(true);
+            templateUrl: 'login.html', controller: 'pfkChatLoginCtlr' });
+        $routeProvider.otherwise({redirectTo: '/login.view'});
     }]);
 
 /*

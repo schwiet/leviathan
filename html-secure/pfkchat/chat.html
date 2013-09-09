@@ -11,13 +11,12 @@
 	</li>
       </ul>
     </td> <td style="vertical-align:top">
-      STATE: <span style="color:{{data.connectionStateColor}}">
-	{{data.connectionState}}</span> <br/>
       {{data.username}}: 
       <input ng-keyup="msgentryKeyup($event)"
 	     ng-model="data.msgentry" type="text"
 	     autofocus size=70 />
       <input type="button" value="clear" ng-click="clearButton()"/>
+      <input type="button" value="logout" ng-click="logoutButton()"/>
       <textarea id="messages" ng-model="data.messages"
 		rows=10 cols=80 >
       </textarea>

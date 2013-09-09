@@ -1,3 +1,52 @@
-
-<p> Login stuff goes here. </p>
-
+<div style="margin-left:auto;
+	    margin-right:auto;
+	    width: 80%;">
+  <div style="text-align: center;
+	      float: left;
+	      width: 45%;">
+    <h1 style="border-bottom:1px solid white;"> LOGIN </h1>
+    <table style="margin-left:auto;
+		  margin-right:auto;">
+      <tr>
+        <td> username: </td>
+        <td> <input ng-model="data.username" type="text" autofocus> </td>
+      </tr><tr>
+        <td> password: </td>
+        <td> <input ng-model="data.password" type="password"> </td>
+      </tr><tr>
+        <td>  </td>
+        <td> <input ng-click="loginButton()" type="button" value="Login"> </td>
+      </tr><tr>
+        <td class="feedback" colspan=2>
+	  {{loginFeedback}}
+        </td> 
+      </tr>
+    </table>
+  </div>
+  <div style="text-align: center;
+	      float: right;
+	      width: 45%;">
+    <h1 style="border-bottom:1px solid white;"> CREATE ACCOUNT </h1>
+    <table style="margin-left:auto;
+		  margin-right:auto;">
+      <tr>
+        <td> choose username: </td>
+        <td> <input ng-model="newusername" type="text"> </td>
+      </tr><tr>
+        <td> choose password: </td>
+        <td> <input ng-model="newpassword" type="password"> </td>
+      </tr><tr>
+        <td> re-type password: </td>
+        <td> <input ng-model="newpassword2" type="password"> </td>
+      </tr><tr>
+        <td>  </td>
+        <td> <input ng-click="registerButton()"
+		    type="button" value="Register"> </td>
+      </tr><tr>
+        <td class="feedback" colspan=2>
+	  {{createFeedback}}
+        </td> 
+      </tr>
+    </table>
+  </div>
+</div>

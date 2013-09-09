@@ -175,6 +175,7 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
         msg.type() != CTS_LOGIN_TOKEN &&
         msg.type() != CTS_REGISTER)
     {
+        cout << "disallowed message: not authenticated" << endl;
         set_done();
         return;
     }
@@ -223,6 +224,14 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
                 pwd_db->newToken(pw);
                 srv2cli.mutable_loginstatus()->set_status( LOGIN_ACCEPT );
                 srv2cli.mutable_loginstatus()->set_token( pw->token );
+                username = pw->username;
+                authenticated = true;
+                ServerToClient  stc;
+                stc.set_type( STC_USER_STATUS );
+                stc.mutable_userstatus()->set_username(username);
+                stc.mutable_userstatus()->set_status(USER_LOGGED_IN);
+                sendClientMessage(stc,true);
+                sendUserList();
             }
         }
         sendClientMessage( srv2cli, false );
@@ -298,6 +307,14 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
                             REGISTER_ACCEPT );
                         srv2cli.mutable_registerstatus()->set_token(
                             ent->token );
+                        username = ent->username;
+                        authenticated = true;
+                        ServerToClient  stc;
+                        stc.set_type( STC_USER_STATUS );
+                        stc.mutable_userstatus()->set_username(username);
+                        stc.mutable_userstatus()->set_status(USER_LOGGED_IN);
+                        sendClientMessage(stc,true);
+                        sendUserList();
                     }
                 }
             }

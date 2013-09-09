@@ -2,43 +2,12 @@
 var pfkChatCtlr = function($scope, depData, depWebSocket) {
     $scope.data = depData;
     $scope.webSocket = depWebSocket;
-    $scope.token = localStorage.PFK_Chat_Token;
 
     $scope.messagesBox = document.getElementById('messages');
     $scope.message = function(msg) {
         $scope.data.messages += msg + "\n";
         $scope.messagesBox.scrollTop = $scope.messagesBox.scrollHeight;
     };
-
-    $scope.webSocket.onReload = function() {
-        $scope.$apply(function() {
-            localStorage.PFK_Chat_Messages = $scope.data.messages;
-            localStorage.PFK_Chat_MsgEntry = $scope.data.msgentry;
-        })}
-
-    $scope.webSocket.onLoginSuccess = function() {
-        $scope.$apply(function() {
-            $scope.sendTypingInd($scope.stateEmpty);
-        })}
-
-    $scope.webSocket.onConnect = function() {
-        $scope.$apply(function() {
-            var cts = new PFK.Chat.ClientToServer;
-            cts.type = PFK.Chat.ClientToServerType.CTS_LOGIN_TOKEN;
-            cts.logintoken = new PFK.Chat.LoginToken;
-            cts.logintoken.username = $scope.data.username;
-            cts.logintoken.token = $scope.token;
-            $scope.webSocket.send(cts);
-        })}
-
-    $scope.webSocket.onUserList = function(userList) {
-        $scope.$apply(function() {
-            $scope.data.userList = [];
-            for (userInd in userList)
-                $scope.data.userList.push(
-                    { name : userList[userInd].username,
-                      typing : userList[userInd].typing });
-        })}
 
     $scope.webSocket.onIm = function(stc) {
         $scope.$apply(function() {
@@ -93,11 +62,6 @@ var pfkChatCtlr = function($scope, depData, depWebSocket) {
     $scope.msgentryKeyup = function(key) {
         if (key.which == 13) // return key
         {
-
-            if ($scope.data.msgentry == "switch")
-                location.replace("#/login.view");
-
-
             $scope.sendMessage($scope.data.msgentry);
             $scope.data.msgentry = "";
             $scope.sendTypingInd($scope.stateEmpty);
@@ -115,6 +79,18 @@ var pfkChatCtlr = function($scope, depData, depWebSocket) {
     $scope.clearButton = function() {
         $scope.data.messages = "";
     }
+
+    $scope.logoutButton = function() {
+        $scope.data.token = "";
+        $scope.data.savePersistent();
+        $scope.webSocket.reset();
+        location.replace('#/login.view');
+    }
+
+    if ($scope.data.msgentry == "")
+        $scope.sendTypingInd($scope.stateEmpty);
+    else
+        $scope.sendTypingInd($scope.stateTyping);
 
     debugThingy = $scope;
 };

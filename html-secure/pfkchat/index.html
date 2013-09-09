@@ -19,10 +19,6 @@
       | STATUS: <span style="color:{{statusColor}}"> {{status}}</span>
       | PROTOVERSION: {{protoVersion}} ]
     </div>
-
-    <a href="#/chat.view"> chat </a> <br/>
-    <a href="#/login.view"> login </a> <br/>
-
     <div ng-view> </div>
     <script src=/js/Long.js> </script>
     <script src=/js/ByteBuffer.js> </script>
@@ -30,10 +26,11 @@
     <script src=/js/angular-1.2.0-rc.2/angular.js> </script>
     <script src=/js/angular-1.2.0-rc.2/angular-route.js> </script>
     <script src=messages.js> </script>
-    <script src=wsstatuscontroller.js> </script>
-    <script src=logincontroller.js> </script>
-    <script src=chatcontroller.js> </script>
-    <script src=services.js> </script>
+    <script src=service-data.js> </script>
+    <script src=service-websocket.js> </script>
+    <script src=controller-ws.js> </script>
+    <script src=controller-login.js> </script>
+    <script src=controller-chat.js> </script>
     <script src=pfkchat.js> </script>
   </body>
 </html>

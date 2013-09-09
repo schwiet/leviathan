@@ -59,6 +59,7 @@ PasswordDatabase :: newToken(PasswordEntry *ent)
     ent->token = token;
     sync();
 
+#if 0
     string cmdline;
 
     cmdline = HTPASSWD_CMD " -b " PFKCHAT_HTPASSWD " ";
@@ -67,6 +68,7 @@ PasswordDatabase :: newToken(PasswordEntry *ent)
     cmdline += ent->token;
 
     system(cmdline.c_str());
+#endif
 }
 
 PasswordEntry *

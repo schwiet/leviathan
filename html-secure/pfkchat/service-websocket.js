@@ -1,33 +1,22 @@
 
-var pfkChatDataModel = function() {
-    var ret = {
-        username : localStorage.PFK_Chat_Username,
-        userList : [],
-        messages : ('PFK_Chat_Messages' in localStorage) ? 
-            localStorage.PFK_Chat_Messages : "",
-        msgentry : ('PFK_Chat_MsgEntry' in localStorage) ?
-            localStorage.PFK_Chat_MsgEntry : ""
-    };
-    delete localStorage.PFK_Chat_Messages;
-    delete localStorage.PFK_Chat_MsgEntry;
-    return ret;
-}
-
 var webSocketService = function() {
     var ret = {
         // user fills these in.
 
-        onStatusChange : null,
+        onRegisterResponse : null,
         onReload : null,
-        onLoginSuccess : null,
         onConnect : null,
+        onLoginSuccess : null,
+        onLoginFail : null,
+        onUserStatus : null,
+        onStatusChange : null,
         onUserList : null,
         onIm : null,
-        onUserStatus : null,
 
         // user reads or calls, but does not write these.
 
         send : null,
+        reset : null,
 
         // below this line, internal.
 
@@ -71,6 +60,32 @@ var webSocketService = function() {
             }
         };
 
+    ret.handlers[PFK.Chat.ServerToClientType.STC_REGISTER_STATUS] =
+        function(stc) {
+            switch (stc.registerStatus.status)
+            {
+            case PFK.Chat.RegisterStatusValue.REGISTER_INVALID_USERNAME:
+                ret.onRegisterResponse(
+                    false,
+                    "INVALID USERNAME (only letters and numbers please)");
+                break;
+            case PFK.Chat.RegisterStatusValue.REGISTER_INVALID_PASSWORD:
+                ret.onRegisterResponse(
+                    false,
+                    "INVALID PASSWORD (only letters and numbers please)");
+                break;
+            case PFK.Chat.RegisterStatusValue.REGISTER_DUPLICATE_USERNAME:
+                ret.onRegisterResponse(
+                    false,
+                    "USERNAME ALREADY IN USE");
+                break;
+            case PFK.Chat.RegisterStatusValue.REGISTER_ACCEPT:
+                ret.onRegisterResponse(true,
+                                       stc.registerStatus.token);
+                break;
+            }
+        };
+
     ret.handlers[PFK.Chat.ServerToClientType.STC_LOGIN_STATUS] =
         function(stc) {
             if (stc.loginStatus.status ==
@@ -81,14 +96,16 @@ var webSocketService = function() {
                 else
                     console.log('no onStatusChange attached');
                 if (ret.onLoginSuccess)
-                    ret.onLoginSuccess();
+                    ret.onLoginSuccess(stc.loginStatus.token);
                 else
                     console.log('no onLoginSuccess installed');
             }
             else
             {
-                location.assign(
-                    'https://flipk.dyndns-home.com/pfkchat-login.html');
+                if (ret.onLoginFail)
+                    ret.onLoginFail();
+                else
+                    console.log('no onLoginFail installed');
             }
         };
 
@@ -112,8 +129,11 @@ var webSocketService = function() {
         function(stc) {
             if (ret.onUserStatus)
                 ret.onUserStatus(stc);
+/* it is okay if this is not registered. if the chat controller
+   isn't running, we don't care about this message. it doesn't
+   update the data model.
             else
-                console.log('no onUserStatus installed');
+                console.log('no onUserStatus installed'); */
         };
 
 
@@ -135,6 +155,8 @@ var webSocketService = function() {
             ret.newsocket.send(cts.toArrayBuffer());
         };
         ret.newsocket.onclose = function() {
+            if (ret.newsocket)
+                ret.newsocket.close();
             ret.socket = null;
             delete ret.newsocket;
             ret.newsocket = null;
@@ -156,6 +178,16 @@ var webSocketService = function() {
             ret.socket.send(cts.toArrayBuffer());
         else
             console.log('websocket did not send: not connected');
+    }
+
+    ret.reset = function() {
+        ret.socket.close();
+        delete ret.socket;
+        ret.socket = null;
+        ret.newsocket = null;
+        window.setTimeout(function() {
+            ret.makesocket();
+        }, 500);
     }
 
     window.setTimeout(function() {
