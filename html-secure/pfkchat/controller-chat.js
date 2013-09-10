@@ -2,14 +2,17 @@
 var pfkChatCtlr = function($scope, depData) {
     $scope.data = depData;
 
-    $scope.messagesBox = document.getElementById('messages');
-    $scope.message = function(msg) {
-        $scope.data.messages += msg + "\n";
-        $scope.messagesBox.scrollTop = $scope.messagesBox.scrollHeight;
+    $scope.immsgs = [];
+
+    $scope.postmsg = function(uname, _msg) {
+        $scope.immsgs.push({ username : uname,
+                             msg : _msg });
+        if ($scope.immsgs.length > 10)
+            $scope.immsgs.shift();
     };
 
     $scope.$on('IM', function(scope,evt) {
-        $scope.message( evt.im.username + ':' + evt.im.msg );
+        $scope.postmsg(evt.im.username, evt.im.msg);
     });
 
     $scope.$on('userStatus', function(scope,evt) {
@@ -17,16 +20,15 @@ var pfkChatCtlr = function($scope, depData) {
         switch (evt.status)
         {
 	case PFK.Chat.UserStatusValue.USER_LOGGED_IN:
-            status = " logged in";
+            status = "__logged in";
 	    break;
 	case PFK.Chat.UserStatusValue.USER_LOGGED_OUT:
-            status = " logged out";
+            status = "__logged out";
 	    break;
 	default:
-	    status = " did something bad";
+	    status = "__did something bad";
         }
-        $scope.message('user ' + evt.username + 
-                       status);
+        $scope.postmsg(evt.username, status);
     });
 
     $scope.sendMessage = function(msg) {
@@ -66,7 +68,7 @@ var pfkChatCtlr = function($scope, depData) {
     }
 
     $scope.clearButton = function() {
-        $scope.data.messages = "";
+        $scope.immsgs = [];
     }
 
     $scope.logoutButton = function() {

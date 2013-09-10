@@ -7,17 +7,13 @@ var pfkChatDataModel = function() {
             localStorage.PFK_Chat_Password : "",
         token      : ('PFK_Chat_Token'    in localStorage) ?
             localStorage.PFK_Chat_Token    : "",
-        messages   : ('PFK_Chat_Messages' in localStorage) ? 
-            localStorage.PFK_Chat_Messages : "",
-        msgentry   : ('PFK_Chat_MsgEntry' in localStorage) ?
-            localStorage.PFK_Chat_MsgEntry : "",
+        msgentry   : "",
         userList : [],
 
         savePersistent : function() {
             localStorage.PFK_Chat_Username = ret.username;
             localStorage.PFK_Chat_Password = ret.password;
             localStorage.PFK_Chat_Token    = ret.token;
-            localStorage.PFK_Chat_Messages = ret.messages;
             localStorage.PFK_Chat_MsgEntry = ret.msgentry;
         },
 
