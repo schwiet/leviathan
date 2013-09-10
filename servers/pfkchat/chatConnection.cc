@@ -333,6 +333,12 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
         {
             ent->token = "__INVALID__";
             pwd_db->sync();
+            ServerToClient  stc;
+            stc.set_type( STC_USER_STATUS );
+            stc.mutable_userstatus()->set_username(username);
+            stc.mutable_userstatus()->set_status(USER_LOGGED_OUT);
+            sendClientMessage(stc,true);
+            sendUserList();
         }
         break;
     }
