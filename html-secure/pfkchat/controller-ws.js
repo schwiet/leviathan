@@ -1,7 +1,6 @@
 
-var wsStatusCtlr = function($scope, depData, depWebSocket) {
+var wsStatusCtlr = function($scope, depData) {
     $scope.data = depData;
-    $scope.webSocket = depWebSocket;
     $scope.lastModified = lastModified;
     $scope.protoVersion = PFK.Chat.CurrentProtoVersion;
 
