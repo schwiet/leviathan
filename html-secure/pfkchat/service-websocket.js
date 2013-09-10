@@ -146,7 +146,6 @@ var webSocketService = function($rootScope, data) {
             if (ret.newsocket)
                 ret.newsocket.close();
             ret.socket = null;
-            delete ret.newsocket;
             ret.newsocket = null;
             data.connectionStatus = 'DISCONNECTED';
             data.connectionStatusColor = 'red';
