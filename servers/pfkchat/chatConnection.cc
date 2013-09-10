@@ -248,8 +248,11 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
         }
         else
         {
-            if (pw->token != msg.logintoken().token())
+            if (pw->token == "__INVALID__" ||
+                pw->token != msg.logintoken().token())
+            {
                 srv2cli.mutable_loginstatus()->set_status( LOGIN_REJECT );
+            }
             else
             {
                 srv2cli.mutable_loginstatus()->set_status( LOGIN_ACCEPT );
@@ -320,6 +323,17 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
             }
         }
         sendClientMessage( srv2cli, false );
+        break;
+    }
+    case CTS_LOGOUT:
+    {
+        authenticated = false;
+        PasswordEntry * ent = pwd_db->lookupUser(username);
+        if (ent)
+        {
+            ent->token = "__INVALID__";
+            pwd_db->sync();
+        }
         break;
     }
     case CTS_IM_MESSAGE:

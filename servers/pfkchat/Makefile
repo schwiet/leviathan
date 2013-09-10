@@ -42,9 +42,9 @@ vers:
 	echo -n 0x > vers
 	random_hex 7 >> vers
 
-pfkchat-messages.pb.cc pfkchat-messages.pb.h: pfkchat-messages-all.proto vers
-	$(protoc) --cpp_out=. pfkchat-messages-all.proto
-	$(proto2js) pfkchat-messages-all.proto -class > $(jsproto_full)
+pfkchat-messages.pb.cc pfkchat-messages.pb.h: pfkchat-messages.proto vers
+	$(protoc) --cpp_out=. pfkchat-messages.proto
+	$(proto2js) pfkchat-messages.proto -class > $(jsproto_full)
 	echo "; PFK.Chat.CurrentProtoVersion = `cat vers`;" >> $(jsproto_full)
 
 .cc.o:

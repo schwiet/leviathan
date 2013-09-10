@@ -16,7 +16,8 @@
 
     <div class="wsStatus" ng-controller="wsStatusCtlr">
       [ LAST MODIFIED: {{lastModified}}
-      | STATUS: <span style="color:{{statusColor}}"> {{status}}</span>
+      | STATUS: <span style="color:{{data.connectionStatusColor}}">
+        {{data.connectionStatus}}</span>
       | PROTOVERSION: {{protoVersion}} ]
     </div>
     <div ng-view> </div>

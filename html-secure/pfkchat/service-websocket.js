@@ -1,31 +1,15 @@
 
-var webSocketService = function() {
+var webSocketService = function($rootScope, data) {
     var ret = {
-        // user fills these in.
-
-        onRegisterResponse : null,
-        onReload : null,
-        onConnect : null,
-        onLoginSuccess : null,
-        onLoginFail : null,
-        onUserStatus : null,
-        onStatusChange : null,
-        onUserList : null,
-        onIm : null,
-
-        // user reads or calls, but does not write these.
-
-        send : null,
-        reset : null,
-
-        // below this line, internal.
-
         socket : null,
         handlers : [],
         makesocket : null,
         newsocket : null,
         wsuri : ""
     };
+
+    debugWsService = ret;
+    debugWsRootScope = $rootScope;
 
     var myuri = window.location;
     var newuri = "wss://";
@@ -42,21 +26,31 @@ var webSocketService = function() {
             if (stc.protoversionresp !=
                 PFK.Chat.ProtoVersionResp.PROTO_VERSION_MATCH)
             {
-                if (ret.onReload)
-                    ret.onReload();
+                data.savePersistent();
                 location.reload(true);
             }
             else
             {
                 ret.socket = ret.newsocket;
-                if (ret.onStatusChange)
-                    ret.onStatusChange('CONNECTED','white');
+                data.connectionStatus = 'CONNECTED';
+                data.connectionStatusColor = 'white';
+                if (data.token == "")
+                {
+                    location.replace("#/login.view");
+                }
                 else
-                    console.log('no onStatusChange installed');
-                if (ret.onConnect)
-                    ret.onConnect();
-                else
-                    console.log('no onConnect installed');
+                {
+                    var cts = new PFK.Chat.ClientToServer;
+                    cts.type = PFK.Chat.ClientToServerType.CTS_LOGIN_TOKEN;
+                    cts.logintoken = new PFK.Chat.LoginToken;
+                    cts.logintoken.username = data.username;
+                    cts.logintoken.token = data.token;
+                    if (ret.socket)
+                        ret.socket.send(cts.toArrayBuffer());
+                }
+
+
+
             }
         };
 
@@ -65,23 +59,24 @@ var webSocketService = function() {
             switch (stc.registerStatus.status)
             {
             case PFK.Chat.RegisterStatusValue.REGISTER_INVALID_USERNAME:
-                ret.onRegisterResponse(
-                    false,
+                $rootScope.$broadcast(
+                    'registerFailure',
                     "INVALID USERNAME (only letters and numbers please)");
                 break;
             case PFK.Chat.RegisterStatusValue.REGISTER_INVALID_PASSWORD:
-                ret.onRegisterResponse(
-                    false,
+                $rootScope.$broadcast(
+                    'registerFailure',
                     "INVALID PASSWORD (only letters and numbers please)");
                 break;
             case PFK.Chat.RegisterStatusValue.REGISTER_DUPLICATE_USERNAME:
-                ret.onRegisterResponse(
-                    false,
+                $rootScope.$broadcast(
+                    'registerFailure',
                     "USERNAME ALREADY IN USE");
                 break;
             case PFK.Chat.RegisterStatusValue.REGISTER_ACCEPT:
-                ret.onRegisterResponse(true,
-                                       stc.registerStatus.token);
+                data.token = stc.registerStatus.token;
+                data.savePersistent();
+                location.replace('#/chat.view');
                 break;
             }
         };
@@ -91,51 +86,44 @@ var webSocketService = function() {
             if (stc.loginStatus.status ==
                 PFK.Chat.LoginStatusValue.LOGIN_ACCEPT)
             {
-                if (ret.onStatusChange)
-                    ret.onStatusChange('LOGGED IN','white');
-                else
-                    console.log('no onStatusChange attached');
-                if (ret.onLoginSuccess)
-                    ret.onLoginSuccess(stc.loginStatus.token);
-                else
-                    console.log('no onLoginSuccess installed');
+                data.connectionStatus = 'LOGGED IN';
+                data.connectionStatusColor = 'white';
+                if (stc.loginStatus.token)
+                {
+                    data.token = stc.loginStatus.token;
+                    data.savePersistent();
+                }
+                location.replace('#/chat.view');
             }
             else
             {
-                if (ret.onLoginFail)
-                    ret.onLoginFail();
-                else
-                    console.log('no onLoginFail installed');
+                data.connectionStatus = 'LOGIN REJECTED';
+                data.connectionStatusColor = 'red';
+                data.token = "";
+                data.savePersistent();
+                location.replace('#/login.view');
             }
         };
 
     ret.handlers[PFK.Chat.ServerToClientType.STC_USER_LIST] =
         function(stc) {
-            if (ret.onUserList)
-                ret.onUserList(stc.userlist.users);
-            else
-                console.log('no onUserList installed');
+            var userList = stc.userlist.users;
+            data.userList = [];
+            for (userInd in userList)
+                data.userList.push(
+                    { name : userList[userInd].username,
+                      typing : userList[userInd].typing });
         };
 
     ret.handlers[PFK.Chat.ServerToClientType.STC_IM_MESSAGE] =
         function(stc) {
-            if (ret.onIm)
-                ret.onIm(stc);
-            else
-                console.log('no onIm installed');
+            $rootScope.$broadcast('IM', stc);
         };
 
     ret.handlers[PFK.Chat.ServerToClientType.STC_USER_STATUS] =
         function(stc) {
-            if (ret.onUserStatus)
-                ret.onUserStatus(stc);
-/* it is okay if this is not registered. if the chat controller
-   isn't running, we don't care about this message. it doesn't
-   update the data model.
-            else
-                console.log('no onUserStatus installed'); */
+            $rootScope.$broadcast('userStatus', stc.userstatus );
         };
-
 
     ret.handlers[PFK.Chat.ServerToClientType.STC_PONG] =
         function(stc) {
@@ -160,52 +148,79 @@ var webSocketService = function() {
             ret.socket = null;
             delete ret.newsocket;
             ret.newsocket = null;
-            if (ret.onStatusChange)
-                ret.onStatusChange('DISCONNECTED','red');
-            else
-                console.log('no onStatusChange installed');
-            console.log('disconnected!');
+            data.connectionStatus = 'DISCONNECTED';
+            data.connectionStatusColor = 'red';
         };
         ret.newsocket.onmessage = function(msg){
             var stc = PFK.Chat.ServerToClient.decode(msg.data);
             if (stc.type in ret.handlers)
-                ret.handlers[stc.type](stc);
+                $rootScope.$apply(function() {
+                    ret.handlers[stc.type](stc);
+                });
         };
     };
 
-    ret.send = function(cts) {
+    $rootScope.$on('send_IM', function(scope,msg) {
+        var cts = new PFK.Chat.ClientToServer;
+        cts.type = PFK.Chat.ClientToServerType.CTS_IM_MESSAGE;
+        cts.im = new PFK.Chat.IM_Message;
+        cts.im.msg = msg;
         if (ret.socket)
             ret.socket.send(cts.toArrayBuffer());
-        else
-            console.log('websocket did not send: not connected');
-    }
+    });
 
-    ret.reset = function() {
-        ret.socket.close();
-        delete ret.socket;
-        ret.socket = null;
-        ret.newsocket = null;
-        window.setTimeout(function() {
-            ret.makesocket();
-        }, 500);
-    }
+    $rootScope.$on('sendTypingInd', function(scope,state) {
+        var cts = new PFK.Chat.ClientToServer;
+        cts.type = PFK.Chat.ClientToServerType.CTS_TYPING_IND;
+        cts.typing = new PFK.Chat.TypingInd;
+        cts.typing.state = state;
+        if (ret.socket)
+            ret.socket.send(cts.toArrayBuffer());
+    });
+
+    $rootScope.$on('sendLogin', function(scope,username,password) {
+        var cts = new PFK.Chat.ClientToServer;
+        cts.type = PFK.Chat.ClientToServerType.CTS_LOGIN;
+        cts.login = new PFK.Chat.Login;
+        cts.login.username = username;
+        cts.login.password = password;
+        if (ret.socket)
+            ret.socket.send(cts.toArrayBuffer());
+    });
+
+    $rootScope.$on('sendRegister', function(scope,username,password) {
+        var cts = new PFK.Chat.ClientToServer;
+        cts.type = PFK.Chat.ClientToServerType.CTS_REGISTER;
+        cts.regreq = new PFK.Chat.Register;
+        cts.regreq.username = username;
+        cts.regreq.password = password;
+        if (ret.socket)
+            ret.socket.send(cts.toArrayBuffer());
+    });
+
+    $rootScope.$on('sendLogout', function(scope) {
+        var cts = new PFK.Chat.ClientToServer;
+        cts.type = PFK.Chat.ClientToServerType.CTS_LOGOUT;
+        if (ret.socket)
+            ret.socket.send(cts.toArrayBuffer());
+        data.connectionStatus = 'CONNECTED';
+        data.connectionStatusColor = 'white';
+    });
 
     window.setTimeout(function() {
         ret.makesocket();
         window.setInterval(function() {
             if (ret.socket == null)
             {
-                if (ret.onStatusChange)
-                    ret.onStatusChange('TRYING','yellow');
-                else
-                    console.log('no onStatusChange installed');
+                data.connectionStatus = 'TRYING';
+                data.connectionStatusColor = 'yellow';
                 ret.makesocket();
             }
             else
             {
                 var cts = new PFK.Chat.ClientToServer;
                 cts.type = PFK.Chat.ClientToServerType.CTS_PING;
-                ret.send(cts);
+                ret.socket.send(cts.toArrayBuffer());
             }
         }, 3000);
     }, 100);

@@ -21,10 +21,10 @@ struct PasswordEntry {
 class PasswordDatabase {
     static const int tokenLength = 32;
     std::list<PasswordEntry*> database;
-    void sync(void);
 public:
     PasswordDatabase(void);
     ~PasswordDatabase(void);
+    void sync(void);
     PasswordEntry * lookupUser( std::string username );
     void newToken(PasswordEntry *);
     PasswordEntry * addUser( std::string username, std::string password );

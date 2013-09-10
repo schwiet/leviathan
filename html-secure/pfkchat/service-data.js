@@ -19,7 +19,10 @@ var pfkChatDataModel = function() {
             localStorage.PFK_Chat_Token    = ret.token;
             localStorage.PFK_Chat_Messages = ret.messages;
             localStorage.PFK_Chat_MsgEntry = ret.msgentry;
-        }
+        },
+
+        connectionStatus : 'INITIALIZING',
+        connectionStatusColor : 'red',
     };
     delete localStorage.PFK_Chat_Messages;
     delete localStorage.PFK_Chat_MsgEntry;

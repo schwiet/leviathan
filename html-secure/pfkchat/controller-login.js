@@ -1,7 +1,6 @@
 
-var pfkChatLoginCtlr = function($scope, depData, depWebSocket) {
+var pfkChatLoginCtlr = function($scope, depData) {
     $scope.data = depData;
-    $scope.webSocket = depWebSocket;
 
     $scope.loginFeedback = "";
     $scope.createFeedback = "";
@@ -11,12 +10,9 @@ var pfkChatLoginCtlr = function($scope, depData, depWebSocket) {
     $scope.newpassword2 = "";
 
     $scope.loginButton = function() {
-        var cts = new PFK.Chat.ClientToServer;
-        cts.type = PFK.Chat.ClientToServerType.CTS_LOGIN;
-        cts.login = new PFK.Chat.Login;
-        cts.login.username = $scope.data.username;
-        cts.login.password = $scope.data.password;
-        $scope.webSocket.send(cts);
+        $scope.$root.$broadcast('sendLogin',
+                                $scope.data.username,
+                                $scope.data.password);
     }
 
     $scope.registerButton = function() {
@@ -30,16 +26,17 @@ var pfkChatLoginCtlr = function($scope, depData, depWebSocket) {
             $scope.createFeedback = "PASSWORD TOO SHORT";
             return;
         }
-        var cts = new PFK.Chat.ClientToServer;
-        cts.type = PFK.Chat.ClientToServerType.CTS_REGISTER;
-        cts.regreq = new PFK.Chat.Register;
-        cts.regreq.username = $scope.newusername;
-        cts.regreq.password = $scope.newpassword;
-        $scope.webSocket.send(cts);
+        $scope.data.token = "";
         $scope.data.username = $scope.newusername;
         $scope.data.password = $scope.newpassword;
-        $scope.data.token = "";
+        $scope.$root.$broadcast('sendRegister',
+                                $scope.newusername,
+                                $scope.newpassword);
     }
+
+    $scope.$on('registerFailure', function(scope, reason) {
+        $scope.createFeedback = reason;
+    });
 
     $scope.data.messages = "";
     $scope.data.msgentry = "";

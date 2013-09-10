@@ -1,7 +1,6 @@
 
-var pfkChatCtlr = function($scope, depData, depWebSocket) {
+var pfkChatCtlr = function($scope, depData) {
     $scope.data = depData;
-    $scope.webSocket = depWebSocket;
 
     $scope.messagesBox = document.getElementById('messages');
     $scope.message = function(msg) {
@@ -9,36 +8,30 @@ var pfkChatCtlr = function($scope, depData, depWebSocket) {
         $scope.messagesBox.scrollTop = $scope.messagesBox.scrollHeight;
     };
 
-    $scope.webSocket.onIm = function(stc) {
-        $scope.$apply(function() {
-            $scope.message( stc.im.username + ':' + stc.im.msg );
-        })}
+    $scope.$on('IM', function(scope,evt) {
+        $scope.message( evt.im.username + ':' + evt.im.msg );
+    });
 
-    $scope.webSocket.onUserStatus = function(stc) {
-        $scope.$apply(function() {
-            var status = {};
-	    switch (stc.userstatus.status)
-	    {
-	    case PFK.Chat.UserStatusValue.USER_LOGGED_IN:
-                status = " logged in";
-		break;
-	    case PFK.Chat.UserStatusValue.USER_LOGGED_OUT:
-                status = " logged out";
-		break;
-	    default:
-		status = " did something bad";
-	    }
-            $scope.message('user ' + stc.userstatus.username + 
-                           status);
-        })}
+    $scope.$on('userStatus', function(scope,evt) {
+        var status ="";
+        switch (evt.status)
+        {
+	case PFK.Chat.UserStatusValue.USER_LOGGED_IN:
+            status = " logged in";
+	    break;
+	case PFK.Chat.UserStatusValue.USER_LOGGED_OUT:
+            status = " logged out";
+	    break;
+	default:
+	    status = " did something bad";
+        }
+        $scope.message('user ' + evt.username + 
+                       status);
+    });
 
     $scope.sendMessage = function(msg) {
-        var cts = new PFK.Chat.ClientToServer;
-        cts.type = PFK.Chat.ClientToServerType.CTS_IM_MESSAGE;
-        cts.im = new PFK.Chat.IM_Message;
-        cts.im.msg = msg;
-        $scope.webSocket.send(cts);
-    }
+        $scope.$root.$broadcast('send_IM', msg);
+    };
 
     $scope.stateEmpty = PFK.Chat.TypingState.STATE_EMPTY;
     $scope.stateTyping = PFK.Chat.TypingState.STATE_TYPING;
@@ -49,11 +42,7 @@ var pfkChatCtlr = function($scope, depData, depWebSocket) {
         $scope.sendTypingInd = function(state) {
             if (lastSent == null || lastSent != state)
             {
-                var cts = new PFK.Chat.ClientToServer;
-                cts.type = PFK.Chat.ClientToServerType.CTS_TYPING_IND;
-                cts.typing = new PFK.Chat.TypingInd;
-                cts.typing.state = state;
-                $scope.webSocket.send(cts);
+                $scope.$root.$broadcast('sendTypingInd', state);
             }
             lastSent = state;
         }
@@ -83,7 +72,7 @@ var pfkChatCtlr = function($scope, depData, depWebSocket) {
     $scope.logoutButton = function() {
         $scope.data.token = "";
         $scope.data.savePersistent();
-        $scope.webSocket.reset();
+        $scope.$root.$broadcast('sendLogout');
         location.replace('#/login.view');
     }
 
@@ -92,7 +81,7 @@ var pfkChatCtlr = function($scope, depData, depWebSocket) {
     else
         $scope.sendTypingInd($scope.stateTyping);
 
-    debugThingy = $scope;
+    debugChatCtlr = $scope;
 };
 
 /*

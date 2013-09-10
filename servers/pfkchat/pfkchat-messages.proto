@@ -34,8 +34,9 @@ enum ClientToServerType {
 	CTS_LOGIN = 3;            // use 'login'
 	CTS_LOGIN_TOKEN = 4;      // use 'logintoken'
 	CTS_REGISTER = 5;         // use 'register'
-	CTS_IM_MESSAGE = 6;       // use 'im'
-	CTS_TYPING_IND = 7;       // use 'typing'
+	CTS_LOGOUT = 6;           // no arg
+	CTS_IM_MESSAGE = 7;       // use 'im'
+	CTS_TYPING_IND = 8;       // use 'typing'
 }
 message ClientToServer {
 	required ClientToServerType type = 1;
