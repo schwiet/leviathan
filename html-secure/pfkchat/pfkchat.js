@@ -1,11 +1,14 @@
 
 'use strict';
 
-var lastModified = "2013/09/10  20:43:51";
+var lastModified = "2013/09/11  00:06:16";
 
 angular.module("pfkChatApp.services", [])
     .factory('Data',            ['$rootScope',         pfkChatDataModel ])
     .factory('webSocket',       ['$rootScope', 'Data', webSocketService ]);
+
+angular.module("pfkChatApp.directives", [])
+    .directive("chattable",   chatTableDirective);
 
 angular.module("pfkChatApp.controllers", [])
     .controller('wsStatusCtlr',     ['$scope', 'Data', 'webSocket',
@@ -13,10 +16,11 @@ angular.module("pfkChatApp.controllers", [])
     .controller('pfkChatCtlr',      ['$scope', 'Data', pfkChatCtlr      ])
     .controller('pfkChatLoginCtlr', ['$scope', 'Data', pfkChatLoginCtlr ]);
 
-// could also have directives and filters here
+// could also have filters here
 
 angular.module('pfkChatApp', ['pfkChatApp.services',
                               'pfkChatApp.controllers',
+                              'pfkChatApp.directives',
                               'ngRoute'])
     .config(['$routeProvider', function($routeProvider) {
         $routeProvider.when('/chat.view', {
