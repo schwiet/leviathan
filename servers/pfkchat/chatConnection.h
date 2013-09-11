@@ -13,14 +13,16 @@ class myWebSocketConnection : public WebSocketConnection {
     class myWebSocketConnection * prev;
     std::string username;
     bool authenticated;
+    int idleTime;
     PFK::Chat::TypingState typing;
     void sendClientMessage(const PFK::Chat::ServerToClient &msg,
                            bool broadcast);
-    void sendUserList(void);
+    void sendUserList(bool broadcast);
 public:
     const bool get_authenticated(void) const { return authenticated; }
     const PFK::Chat::TypingState get_typing(void) { return typing; }
     const std::string& get_username(void) const { return username; };
+    const int get_idleTime(void) { return idleTime; }
     myWebSocketConnection(int _fd);
     /*virtual*/ ~myWebSocketConnection(void);
     /*virtual*/ void onMessage(const WebSocketMessage &);

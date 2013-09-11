@@ -2,35 +2,6 @@
 var pfkChatCtlr = function($scope, depData) {
     $scope.data = depData;
 
-    $scope.immsgs = [];
-
-    $scope.postmsg = function(uname, _msg) {
-        $scope.immsgs.push({ username : uname,
-                             msg : _msg });
-        if ($scope.immsgs.length > 10)
-            $scope.immsgs.shift();
-    };
-
-    $scope.$on('IM', function(scope,evt) {
-        $scope.postmsg(evt.im.username, evt.im.msg);
-    });
-
-    $scope.$on('userStatus', function(scope,evt) {
-        var status ="";
-        switch (evt.status)
-        {
-	case PFK.Chat.UserStatusValue.USER_LOGGED_IN:
-            status = "__logged in";
-	    break;
-	case PFK.Chat.UserStatusValue.USER_LOGGED_OUT:
-            status = "__logged out";
-	    break;
-	default:
-	    status = "__did something bad";
-        }
-        $scope.postmsg(evt.username, status);
-    });
-
     $scope.sendMessage = function(msg) {
         $scope.$root.$broadcast('send_IM', msg);
     };
@@ -38,6 +9,19 @@ var pfkChatCtlr = function($scope, depData) {
     $scope.stateEmpty = PFK.Chat.TypingState.STATE_EMPTY;
     $scope.stateTyping = PFK.Chat.TypingState.STATE_TYPING;
     $scope.stateEntered = PFK.Chat.TypingState.STATE_ENTERED_TEXT;
+
+    $scope.idle2min = function(secs) {
+        if (secs < 60)
+            return "";
+        var hours = Math.floor(secs / 3600);
+        var left = secs - (hours * 3600);
+        var mins = Math.floor(left / 60);
+        if (secs < 3600)
+            return mins.toString() + "m";
+        if (mins > 0)
+            return hours.toString() + "h" + mins.toString() + "m";
+        return hours.toString() + "h";
+    };
 
     (function() {
         var lastSent = null;
@@ -68,7 +52,7 @@ var pfkChatCtlr = function($scope, depData) {
     }
 
     $scope.clearButton = function() {
-        $scope.immsgs = [];
+        $scope.data.immsgs_bcast = [];
     }
 
     $scope.logoutButton = function() {

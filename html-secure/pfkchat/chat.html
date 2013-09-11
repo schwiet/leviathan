@@ -1,41 +1,37 @@
 <table>
   <tr>
-    <td style="width: 140px; vertical-align:top">
+    <td class="leftColumn">
       <input type="button" value="clear" ng-click="clearButton()"/>
       <input type="button" value="logout" ng-click="logoutButton()"/>
-      <ul class="userList">
-        <li class="userListHeader">
-          Users:
-        </li>
-        <li ng-repeat="user in data.userList"
-            class="userListName userListName-{{user.typing}}">
-          {{user.name}}
-        </li>
-      </ul>
+      <table class="userList">
+        <tr>
+          <td class="userListHeader">
+            Users: 
+          </td> <td style="visibility:hidden;"
+                    class="userListTyping userListTyping-2"></td>
+        <tr ng-repeat="user in data.userList">
+          <td class="userListName"> {{user.name}} </td>
+          <td class="userListTyping userListTyping-{{user.typing}}">
+            {{idle2min(user.idle)}} </td>
+        </tr>
+      </table>
     </td> <td style="vertical-align:top">
       <table style="border-collapse:separate">
-        <tr ng-repeat="immsg in immsgs"
-            style="border:1px solid red;
-                   border-radius:5px;">
-          <td style="border:1px solid blue;
-                   border-radius:5px;">
+        <tr ng-repeat="immsg in data.immsgs_bcast">
+          <td style="text-align:right;">
             {{immsg.username}} </td>
           <td style="border:1px solid green;
-                   border-radius:5px;">
+                     border-radius:5px;">
             {{immsg.msg}} </td>
         </tr>
-
-        <tr style="border:1px solid red;
-                   border-radius:5px;">
-          <td style="border:1px solid blue;
-                     border-radius:5px;">
+        <tr>
+          <td style="text-align:right;">
             {{data.username}}
           </td>
           <td style="">
             <input ng-keyup="msgentryKeyup($event)"
                    ng-model="data.msgentry" type="text"
                    autofocus size=70 />
-            
           </td>
         </tr>
       </table>

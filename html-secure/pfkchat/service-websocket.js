@@ -32,8 +32,7 @@ var webSocketService = function($rootScope, data) {
             else
             {
                 ret.socket = ret.newsocket;
-                data.connectionStatus = 'CONNECTED';
-                data.connectionStatusColor = 'white';
+                data.setStatus('CONNECTED','white');
                 if (data.token == "")
                 {
                     location.replace("#/login.view");
@@ -86,8 +85,7 @@ var webSocketService = function($rootScope, data) {
             if (stc.loginStatus.status ==
                 PFK.Chat.LoginStatusValue.LOGIN_ACCEPT)
             {
-                data.connectionStatus = 'LOGGED IN';
-                data.connectionStatusColor = 'white';
+                data.setStatus('LOGGED IN','white');
                 if (stc.loginStatus.token)
                 {
                     data.token = stc.loginStatus.token;
@@ -97,8 +95,7 @@ var webSocketService = function($rootScope, data) {
             }
             else
             {
-                data.connectionStatus = 'LOGIN REJECTED';
-                data.connectionStatusColor = 'red';
+                data.setStatus('LOGIN REJECTED','red');
                 data.token = "";
                 data.savePersistent();
                 location.replace('#/login.view');
@@ -112,17 +109,30 @@ var webSocketService = function($rootScope, data) {
             for (userInd in userList)
                 data.userList.push(
                     { name : userList[userInd].username,
-                      typing : userList[userInd].typing });
+                      typing : userList[userInd].typing,
+                      idle : userList[userInd].idle });
         };
 
     ret.handlers[PFK.Chat.ServerToClientType.STC_IM_MESSAGE] =
         function(stc) {
-            $rootScope.$broadcast('IM', stc);
+            data.postmsg(stc.im.username, stc.im.msg);
         };
 
     ret.handlers[PFK.Chat.ServerToClientType.STC_USER_STATUS] =
         function(stc) {
-            $rootScope.$broadcast('userStatus', stc.userstatus );
+            var status ="";
+            switch (stc.userstatus.status)
+            {
+	    case PFK.Chat.UserStatusValue.USER_LOGGED_IN:
+                status = "__logged in";
+	        break;
+	    case PFK.Chat.UserStatusValue.USER_LOGGED_OUT:
+                status = "__logged out";
+	        break;
+	    default:
+	        status = "__did something bad";
+            }
+            data.postmsg(stc.userstatus.username, status);
         };
 
     ret.handlers[PFK.Chat.ServerToClientType.STC_PONG] =
@@ -147,8 +157,7 @@ var webSocketService = function($rootScope, data) {
                 ret.newsocket.close();
             ret.socket = null;
             ret.newsocket = null;
-            data.connectionStatus = 'DISCONNECTED';
-            data.connectionStatusColor = 'red';
+            $rootScope.$apply(data.setStatus('DISCONNECTED','red'));
         };
         ret.newsocket.onmessage = function(msg){
             var stc = PFK.Chat.ServerToClient.decode(msg.data);
@@ -202,8 +211,20 @@ var webSocketService = function($rootScope, data) {
         cts.type = PFK.Chat.ClientToServerType.CTS_LOGOUT;
         if (ret.socket)
             ret.socket.send(cts.toArrayBuffer());
-        data.connectionStatus = 'CONNECTED';
-        data.connectionStatusColor = 'white';
+        data.setStatus('CONNECTED','white');
+    });
+
+    function sendPing(forced) {
+        var cts = new PFK.Chat.ClientToServer;
+        cts.type = PFK.Chat.ClientToServerType.CTS_PING;
+        cts.ping = new PFK.Chat.Ping;
+        cts.ping.idle = data.idleTime;
+        cts.ping.forced = forced;
+        ret.socket.send(cts.toArrayBuffer());
+    }
+
+    $rootScope.$on('notIdle', function() {
+        sendPing(true);
     });
 
     window.setTimeout(function() {
@@ -211,17 +232,14 @@ var webSocketService = function($rootScope, data) {
         window.setInterval(function() {
             if (ret.socket == null)
             {
-                data.connectionStatus = 'TRYING';
-                data.connectionStatusColor = 'yellow';
+                $rootScope.$apply(data.setStatus('TRYING','yellow'));
                 ret.makesocket();
             }
             else
             {
-                var cts = new PFK.Chat.ClientToServer;
-                cts.type = PFK.Chat.ClientToServerType.CTS_PING;
-                ret.socket.send(cts.toArrayBuffer());
+                sendPing(false);
             }
-        }, 3000);
+        }, 30000);
     }, 100);
 
     return ret;

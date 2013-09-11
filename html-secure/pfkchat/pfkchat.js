@@ -1,10 +1,10 @@
 
 'use strict';
 
-var lastModified = "2013/09/09  23:05:16";
+var lastModified = "2013/09/10  20:43:51";
 
 angular.module("pfkChatApp.services", [])
-    .factory('Data',                                   pfkChatDataModel  )
+    .factory('Data',            ['$rootScope',         pfkChatDataModel ])
     .factory('webSocket',       ['$rootScope', 'Data', webSocketService ]);
 
 angular.module("pfkChatApp.controllers", [])

@@ -20,13 +20,12 @@ a {
 }
 
 .leftColumn {
-    width: 140px;
-    height: 10em;
-    float: left;
-    padding: 10px;
+    width: 230px;
+    vertical-align:top
 }
 
 .userList {
+    width: 100%;
     list-style: none;
     padding: 10px 0 0 0;
     -webkit-margin-before: 0em;
@@ -64,14 +63,22 @@ a {
     padding: 5px;
     border-radius: 5px;
 }
-.userListName-1 {
+.userListTyping {
+    text-align: left;
+    font-size: 14px;
+/*    background: #404040;*/
+    margin: 5px;
+    padding: 5px;
+    border-radius: 5px;
+}
+.userListTyping-1 {
     color: white;
 }
-.userListName-2 {
+.userListTyping-2 {
     color: yellow;
 }
-.userListName-2:after {
-    content: " (typing)";
+.userListTyping-2:after {
+    content: "typing";
 }
 
 .menu {

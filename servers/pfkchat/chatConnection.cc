@@ -50,6 +50,7 @@ myWebSocketConnection :: myWebSocketConnection(int _fd)
     authenticated = false;
     typing = STATE_EMPTY;
     username = "guest";
+    idleTime = 0;
 }
 
 myWebSocketConnection :: ~myWebSocketConnection(void)
@@ -70,7 +71,7 @@ myWebSocketConnection :: ~myWebSocketConnection(void)
         stc.mutable_userstatus()->set_username(username);
         stc.mutable_userstatus()->set_status(USER_LOGGED_OUT);
         sendClientMessage(stc,true);
-        sendUserList();
+        sendUserList(true);
     }
 }
 
@@ -80,7 +81,7 @@ myWebSocketConnection :: sendClientMessage(const ServerToClient &outmsg,
 {
     string outmsgbinary;
 
-    if (outmsg.type() != STC_PONG)
+//    if (outmsg.type() != STC_PONG)
         cout << "sending message to browser: " << outmsg.DebugString() << endl;
 
     outmsg.SerializeToString( &outmsgbinary );
@@ -106,7 +107,7 @@ myWebSocketConnection :: sendClientMessage(const ServerToClient &outmsg,
 }
 
 void
-myWebSocketConnection :: sendUserList(void)
+myWebSocketConnection :: sendUserList(bool broadcast)
 {
     ServerToClient  stc;
     stc.set_type( STC_USER_LIST );
@@ -120,11 +121,12 @@ myWebSocketConnection :: sendUserList(void)
             UserInfo * ui = ul->add_users();
             ui->set_username(c->get_username());
             ui->set_typing(c->get_typing());
+            ui->set_idle(c->get_idleTime());
         }
     }
     unlock();
 
-    sendClientMessage(stc,true);
+    sendClientMessage(stc,broadcast);
 }
 
 void
@@ -165,7 +167,7 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
         return;
     }
 
-    if (msg.type() != CTS_PING)
+//    if (msg.type() != CTS_PING)
         cout << "decoded message from server: " << msg.DebugString() << endl;
 
     if (authenticated == false &&
@@ -200,9 +202,11 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
     }
     case CTS_PING:
     {
-        ServerToClient  srv2cli;
-        srv2cli.set_type( STC_PONG );
-        sendClientMessage( srv2cli, false );
+        idleTime = msg.ping().idle();
+        if (msg.ping().forced())
+            sendUserList(true);
+        else
+            sendUserList(false);
         break;
     }
     case CTS_LOGIN:
@@ -231,7 +235,7 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
                 stc.mutable_userstatus()->set_username(username);
                 stc.mutable_userstatus()->set_status(USER_LOGGED_IN);
                 sendClientMessage(stc,true);
-                sendUserList();
+                sendUserList(true);
             }
         }
         sendClientMessage( srv2cli, false );
@@ -263,7 +267,7 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
                 stc.mutable_userstatus()->set_username(username);
                 stc.mutable_userstatus()->set_status(USER_LOGGED_IN);
                 sendClientMessage(stc,true);
-                sendUserList();
+                sendUserList(true);
             }
         }
         sendClientMessage( srv2cli, false );
@@ -317,7 +321,7 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
                         stc.mutable_userstatus()->set_username(username);
                         stc.mutable_userstatus()->set_status(USER_LOGGED_IN);
                         sendClientMessage(stc,true);
-                        sendUserList();
+                        sendUserList(true);
                     }
                 }
             }
@@ -338,7 +342,7 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
             stc.mutable_userstatus()->set_username(username);
             stc.mutable_userstatus()->set_status(USER_LOGGED_OUT);
             sendClientMessage(stc,true);
-            sendUserList();
+            sendUserList(true);
         }
         break;
     }
@@ -353,8 +357,9 @@ myWebSocketConnection :: onMessage(const WebSocketMessage &m)
     }
     case CTS_TYPING_IND:
     {
+        idleTime = 0;
         typing = msg.typing().state();
-        sendUserList();
+        sendUserList(true);
         break;
     }
     default:

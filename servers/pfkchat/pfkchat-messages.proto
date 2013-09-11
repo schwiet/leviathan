@@ -4,6 +4,10 @@ package PFK.Chat;
 message ProtoVersion {
 	required int32 version = 1;
 }
+message Ping {
+	required int32 idle = 1;
+	required bool forced = 2;
+}
 message Login {
 	required string username = 1;
 	required string password = 2;
@@ -30,7 +34,7 @@ message TypingInd {
 }
 enum ClientToServerType {
 	CTS_PROTOVERSION = 1;     // use 'protoversion'
-	CTS_PING = 2;             // no arg
+	CTS_PING = 2;             // use 'ping'
 	CTS_LOGIN = 3;            // use 'login'
 	CTS_LOGIN_TOKEN = 4;      // use 'logintoken'
 	CTS_REGISTER = 5;         // use 'register'
@@ -41,11 +45,12 @@ enum ClientToServerType {
 message ClientToServer {
 	required ClientToServerType type = 1;
 	optional ProtoVersion protoversion = 2;
-	optional Login login = 3;
-	optional LoginToken logintoken = 4;
-	optional Register regreq = 5;
-	optional IM_Message im = 6;
-	optional TypingInd typing = 7;
+	optional Ping ping = 3;
+	optional Login login = 4;
+	optional LoginToken logintoken = 5;
+	optional Register regreq = 6;
+	optional IM_Message im = 7;
+	optional TypingInd typing = 8;
 }
 
 
@@ -72,8 +77,9 @@ message RegisterStatus {
 	optional string token = 2;
 }
 message UserInfo {
-	required TypingState typing = 1;
-	required string username = 2;
+	required string username = 1;
+	required TypingState typing = 2;
+	required int32 idle = 3;
 }
 message UserList {
 	repeated UserInfo users = 1;
@@ -88,12 +94,11 @@ message UserStatus {
 }
 enum ServerToClientType {
 	STC_PROTOVERSION_RESP = 1;  // use protoversionresp
-	STC_PONG = 2;               // no arg
-	STC_LOGIN_STATUS = 3;       // use loginStatus
-	STC_REGISTER_STATUS = 4;    // use registerStatus
-	STC_IM_MESSAGE = 5;         // use 'im'
-	STC_USER_LIST = 6;          // use 'userlist'
-	STC_USER_STATUS = 7;        // use 'userstatus'
+	STC_LOGIN_STATUS = 2;       // use loginStatus
+	STC_REGISTER_STATUS = 3;    // use registerStatus
+	STC_IM_MESSAGE = 4;         // use 'im'
+	STC_USER_LIST = 5;          // use 'userlist'
+	STC_USER_STATUS = 6;        // use 'userstatus'
 }
 message ServerToClient {
 	required ServerToClientType type = 1;
