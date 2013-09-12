@@ -9,13 +9,13 @@ var pfkChatLoginCtlr = function($scope, depData) {
     $scope.newpassword = "";
     $scope.newpassword2 = "";
 
-    $scope.loginButton = function() {
+    $scope.doLogin = function() {
         $scope.$root.$broadcast('sendLogin',
                                 $scope.data.username,
                                 $scope.data.password);
-    }
+    };
 
-    $scope.registerButton = function() {
+    $scope.doRegister = function() {
         if ($scope.newpassword != $scope.newpassword2)
         {
             $scope.createFeedback = "PASSWORDS DON'T MATCH";
@@ -32,6 +32,19 @@ var pfkChatLoginCtlr = function($scope, depData) {
         $scope.$root.$broadcast('sendRegister',
                                 $scope.newusername,
                                 $scope.newpassword);
+    };
+
+    $scope.loginButton = $scope.doLogin;
+    $scope.registerButton = $scope.doRegister;
+
+    $scope.passwdKeypress = function(evt) {
+        if (evt.which == 13)
+            $scope.doLogin();
+    }
+
+    $scope.regPasswdKeypress = function(evt) {
+        if (evt.which == 13)
+            $scope.doRegister();
     }
 
     $scope.$on('registerFailure', function(scope, reason) {

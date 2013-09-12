@@ -12,7 +12,8 @@
         <td> <input ng-model="data.username" type="text" autofocus> </td>
       </tr><tr>
         <td> password: </td>
-        <td> <input ng-model="data.password" type="password"> </td>
+        <td> <input ng-model="data.password" type="password"
+                    ng-keypress="passwdKeypress($event)"> </td>
       </tr><tr>
         <td>  </td>
         <td> <input ng-click="loginButton()" type="button" value="Login"> </td>
@@ -37,7 +38,8 @@
         <td> <input ng-model="newpassword" type="password"> </td>
       </tr><tr>
         <td> re-type password: </td>
-        <td> <input ng-model="newpassword2" type="password"> </td>
+        <td> <input ng-model="newpassword2" type="password"
+                    ng-keypress="regPasswdKeypress($event)"> </td>
       </tr><tr>
         <td>  </td>
         <td> <input ng-click="registerButton()"
