@@ -8,15 +8,38 @@ a {
     color: #ffffff;
 }
 
-#pageTitle {
+.pageTitle {
     height: 4em;
     width: 100%;
     border-bottom: 1px solid #ffffff;
+}
+.pageTitle-l {
+    text-align: left;
+    float: left;
+}
+.pageTitle-ls {
+    font-size: 3em;
+}
+.pageTitle-r {
+    float: right;
+    position: relative;
+}
+.pageTitle-rs {
+    font-size: 2em;
 }
 
 .wsStatus {
     text-align: center;
     border-bottom: 1px solid #ffffff;
+}
+.wsStatus-red {
+    color: red;
+}
+.wsStatus-yellow {
+    color: yellow;
+}
+.wsStatus-white {
+    color: white;
 }
 
 .leftColumn {
@@ -79,6 +102,16 @@ a {
 }
 .userListTyping-2:after {
     content: "typing";
+}
+
+.chattable {
+    border-collapse:separate;
+}
+.chattable-username {
+    text-align:right;
+}
+.chattable-msg {
+    text-align:right;
 }
 
 .menu {

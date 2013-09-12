@@ -1,14 +1,14 @@
 
 'use strict';
 
-var lastModified = "2013/09/11  00:06:16";
+var lastModified = "2013/09/11  22:22:33";
 
 angular.module("pfkChatApp.services", [])
     .factory('Data',            ['$rootScope',         pfkChatDataModel ])
     .factory('webSocket',       ['$rootScope', 'Data', webSocketService ]);
 
 angular.module("pfkChatApp.directives", [])
-    .directive("chattable",   chatTableDirective);
+    .directive("chattable",   [chatTableDirective]);
 
 angular.module("pfkChatApp.controllers", [])
     .controller('wsStatusCtlr',     ['$scope', 'Data', 'webSocket',

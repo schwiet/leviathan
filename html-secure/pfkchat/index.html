@@ -1,22 +1,23 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>PFK CHAT</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
     <link rel="stylesheet" type="text/css" href="pfkchat.css" />
+    <title>PFK CHAT</title>
   </head>
   <body ng-app="pfkChatApp">
-    <div id="pageTitle">
-      <div style="text-align: left; float: left">
-        <span style="font-size: 3em"> pfk.org/pfkchat </span>
+    <div class="pageTitle">
+      <div class="pageTitle-l">
+        <span class="pageTitle-ls"> www.phillipknaack.com/pfkchat </span>
       </div>
-      <div style="float: right; position: relative">
-        <span style="font-size: 2em"> pfk@pfk.org </span>
+      <div class="pageTitle-r">
+        <span class="pageTitle-rs"> a pfk site </span>
       </div>
     </div>
-
     <div class="wsStatus" ng-controller="wsStatusCtlr">
       [ LAST MODIFIED: {{lastModified}}
-      | STATUS: <span style="color:{{data.connectionStatusColor}}">
+      | STATUS: <span class="wsStatus-{{data.connectionStatusColor}}">
         {{data.connectionStatus}}</span>
       | PROTOVERSION: {{protoVersion}} ]
     </div>

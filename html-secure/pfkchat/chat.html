@@ -16,28 +16,7 @@
         </tr>
       </table>
     </td> <td style="vertical-align:top">
-      <table style="border-collapse:separate">
-        <tr ng-repeat="immsg in data.immsgs_bcast">
-          <td style="text-align:right;">
-            {{immsg.username}} </td>
-          <td style="border:1px solid green;
-                     border-radius:5px;">
-            {{immsg.msg}} </td>
-        </tr>
-        <tr>
-          <td style="text-align:right;">
-            {{data.username}}
-          </td>
-          <td style="">
-            <input ng-keyup="msgentryKeyup($event)"
-                   ng-model="data.msgentry" type="text"
-                   autofocus size=70 />
-          </td>
-        </tr>
-      </table>
-      <chattable
-         message-object="immsgs_bcast">
-      </chattable>
+      <chattable message-object="immsgs_bcast" />
     </td>
   </tr>
 </table>

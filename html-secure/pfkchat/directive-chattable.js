@@ -1,27 +1,38 @@
 
 var chatTableDirective = function() {
 
-    var otherElement = angular.element("<div>{{data.immsgs_bcast}}</div>");
-
-    var link = function(scope, templ, attribs) {
-//      otherElement.toggleClass('randomClass');
-        console.log('link function scope:', scope);
-        console.log('link function templ:', templ);
-        console.log('link function attribs:', attribs);
-
-        console.log(scope.data[attribs.messageObject]);
-    };
+//    var newelement = angular.element('<some html />');
+//    link : function(scope, templ, attribs, ^requires) {
+//        modify newelement somehow;
+//    }
+//    compile : function(templ) {
+//        templ.append(newelement);
+//        return link;
+//    }
 
     var ret = {
         restrict: "E",
         replace : true,
-        template : '<div>xx xx</div>', // html here
-        compile : function (templ) {
-            templ.append(otherElement);
-            return link;
-        }
+        template : 
+            '<table class="chattable">' +
+            '  <tr ng-repeat="immsg in data.immsgs_bcast">' +
+            '    <td class="chattable-username">' +
+            '      {{immsg.username}} </td>' +
+            '    <td style="border:1px solid green;' +
+            '               border-radius:5px;">' +
+            '      {{immsg.msg}} </td>' +
+            '  </tr><tr>' +
+            '    <td class="chattable-msg" >' +
+            '      {{data.username}}' +
+            '    </td>' +
+            '    <td style="">' +
+            '      <input ng-keyup="msgentryKeyup($event)"' +
+            '             ng-model="data.msgentry" type="text"' +
+            '             autofocus size=70 />' +
+            '    </td>' +
+            '  </tr>' +
+            '</table>'
     };
-
     return ret;
 }
 
