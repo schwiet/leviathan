@@ -2,7 +2,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
   <head>
-    <title>Test Page for the Nginx HTTP Server on Fedora</title>
+    <title> phillipknaack.com -- a pfk site </title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <style type="text/css">
       /*<![CDATA[*/
@@ -92,83 +92,138 @@
     </style>
   </head>
   <body>
-    <h1>Welcome to <strong>nginx</strong> on Fedora!</h1>
-    <div class="content">
-      <div class="alert">
-        <h2>Website Visitor</h2>
-        <div class="content">
-	  <p>Note that HTML5 and WebSockets
-	    (<a href="http://tools.ietf.org/html/rfc6455">RFC6455</a>)
-	    are required to use these sites! </p>
-	  <p>I have no intention to add support for browsers which
-	    do not have recent WebSocket support.  I've heard of AJAX, and 
-	    don't care.  Also I've tried to get 
-  <a href="http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76">
-	      hixie-76</a> (as used in Safari 5) to work, and failed.</p>
-	  <table style="width: 100%">
-	    <tr>
-	      <td class="name"> 
-		<a href="https://www.google.com/intl/en/chrome/browser/">
-		  Chrome</a> (all versions) </td>
-	      <td class="green"> TESTED OK </td>
-	    </tr><tr>
-	      <td> 
-		<a href="http://www.mozilla.org/en-US/firefox">
-		  Firefox</a> 22 or later </td>
-	      <td class="green"> TESTED OK </td>
-	    </tr><tr>
-	      <td> 
-		<a href="http://windows.microsoft.com/en-us/internet-explorer/ie-10-worldwide-languages">
-		  Internet Explorer</a> 10 or later </td>
-	      <td class="green"> TESTED OK </td>
-	    </tr><tr>
-	      <td> Safari 6 or later on iOS </td>
-	      <td class="green"> WORKS, barely tested </td>
-	    </tr><tr>
-	      <td> Safari 6 or later on Mac </td>
-	      <td class="green"> NOT TESTED, should work </td>
-	    </tr><tr>
-	      <td> IE Mobile 10 or later </td>
-	      <td class="green"> NOT TESTED, should work </td>
-	    </tr><tr>
-	      <td> Blackberry Browser (all versions) </td>
-	      <td class="green"> NOT TESTED, should work </td>
-	    </tr><tr>
-	      <td> Opera 16 or later </td>
-	      <td class="green"> NOT TESTED, should work </td>
-	    </tr><tr>
-	      <td> Internet Explorer 9 or earlier </td>
-	      <td class="red"> NOT SUPPORTED (no websockets) </td>
-	    </tr><tr>
-	      <td> Safari 5.1 or earlier </td>
-	      <td class="red"> NOT SUPPORTED (hixie-76 only) </td>
-	    </tr><tr>
-	      <td> Safari 5 or earlier on iOS </td>
-	      <td class="red"> NOT SUPPORTED </td>
-	    </tr><tr>
-	      <td> Opera Mini (all versions) </td>
-	      <td class="red"> NOT SUPPORTED </td>
-	    </tr><tr>
-	      <td> Android Browser (all versions) </td>
-	      <td class="red"> NOT SUPPORTED </td>
-	    </tr>
-	  </table>
-	  <br/>
-	  <br/>
-          <p><a href="leviathan-login.html">Leviathan BBS</a></p>
-          <p><a href="pfkchat">PFK Chat</a></p>
-        </div>
+    <div id="wholepage">
+      <h1> <strong>phillipknaack.com</strong> -- a pfk site</h1>
+      <div class="content">
+	<div class="alert">
+          <h2> Welcome </h2>
+          <div class="content">
+            <p><a href="pfkchat">PFK Chat</a></p>
+            <p><a href="leviathan-login.html">Leviathan BBS</a></p>
+	  </div>
+	</div>
       </div>
-      <div class="logos">
-        <a href="http://nginx.net/">
-	  <img src="nginx-logo.png" 
-	       alt="[ Powered by nginx ]"
-	       width="121" height="32" /></a>
-        <a href="http://fedoraproject.org/">
-	  <img src="poweredby.png" 
-               alt="[ Powered by Fedora ]" 
-               width="88" height="31" /></a>
+      <div class="content">
+	<div class="alert">
+          <h2> NOTE about SSL </h2>
+          <div class="content">
+            <p>This server only supports https. However, an official
+	      certificate has not been purchased (we are a low-budget
+	      shop here).</p>
+
+            <p>There is a self-signed SSL certificate for this website
+              available for download:
+	      <ul>
+		<li> <a href="www.phillipknaack.com.crt">
+		    crt format </a> (i.e. MS Windows)</li>
+		<li> <a href="www.phillipknaack.com.cer">
+		    cer format</a> (?) </li>
+		<li> <a href="www.phillipknaack.com.pem">
+		    pem format</a> (i.e. Safari/iOS) </li>
+	    </ul> </p>
+
+	    <p>Open this file and install it into your Trusted Root Certification
+              Authority/Certificates store in order to access the https version
+	      of this site with no warnings.</p>
+
+	    <p>You must import the cert into the Trusted Root Certification
+	      Authority. You must explicitly select this store.
+	      Do not allow it to automatically select which store to use; it
+	      will choose the wrong store.</p>
+
+	    <p>This is sufficient for Internet Explorer and Chrome; however,
+	      Firefox requires an additional step of adding a security
+	      exception.</p>
+
+	  </div>
+	</div>
+      </div>
+      <div class="content">
+	<div class="alert">
+          <h2> NOTE about standards compliance </h2>
+          <div class="content">
+
+	    <p>HTML5 and WebSockets
+	      (<a href="http://tools.ietf.org/html/rfc6455">RFC6455</a>)
+	      are required to use these sites! </p>
+	    <p>I have no intention to add support for browsers which
+	      do not have recent WebSocket support.  I've heard of AJAX, and 
+	      don't care.  Also I've tried to get 
+	      <a href="http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76">
+		hixie-76</a> (as used in Safari 5) to work, and failed.</p>
+	    <table style="width: 100%">
+	      <tr>
+		<td class="name"> 
+		  <a href="https://www.google.com/intl/en/chrome/browser/">
+		    Chrome</a> (all versions) </td>
+		<td class="green"> TESTED OK </td>
+	      </tr><tr>
+		<td> 
+		  <a href="http://www.mozilla.org/en-US/firefox">
+		    Firefox</a> 22 or later </td>
+		<td class="green"> TESTED OK </td>
+	      </tr><tr>
+		<td> 
+		  <a href="http://windows.microsoft.com/en-us/internet-explorer/ie-10-worldwide-languages">
+		    Internet Explorer</a> 10 or later </td>
+		<td class="green"> TESTED OK </td>
+	      </tr><tr>
+		<td> Safari 6 or later on iOS </td>
+		<td class="green"> WORKS, barely tested </td>
+	      </tr><tr>
+		<td> Safari 6 or later on Mac </td>
+		<td class="green"> NOT TESTED, should work </td>
+	      </tr><tr>
+		<td> IE Mobile 10 or later </td>
+		<td class="green"> NOT TESTED, should work </td>
+	      </tr><tr>
+		<td> Blackberry Browser (all versions) </td>
+		<td class="green"> NOT TESTED, should work </td>
+	      </tr><tr>
+		<td> Opera 16 or later </td>
+		<td class="green"> NOT TESTED, should work </td>
+	      </tr><tr>
+		<td> Internet Explorer 9 or earlier </td>
+		<td class="red"> NOT SUPPORTED (no websockets) </td>
+	      </tr><tr>
+		<td> Safari 5.1 or earlier </td>
+		<td class="red"> NOT SUPPORTED (hixie-76 only) </td>
+	      </tr><tr>
+		<td> Safari 5 or earlier on iOS </td>
+		<td class="red"> NOT SUPPORTED </td>
+	      </tr><tr>
+		<td> Opera Mini (all versions) </td>
+		<td class="red"> NOT SUPPORTED </td>
+	      </tr><tr>
+		<td> Android Browser (all versions) </td>
+		<td class="red"> NOT SUPPORTED </td>
+	      </tr>
+	    </table>
+          </div>
+	</div>
+	<div class="logos">
+          <a href="http://nginx.net/">
+	    <img src="nginx-logo.png" 
+		 alt="[ Powered by nginx ]"
+		 width="121" height="32" /></a>
+          <a href="http://fedoraproject.org/">
+	    <img src="poweredby.png" 
+		 alt="[ Powered by Fedora ]" 
+		 width="88" height="31" /></a>
+	</div>
       </div>
     </div>
+    <script>
+
+var wholepage = document.getElementById("wholepage");
+
+if (location.host != "www.phillipknaack.com" &&
+    location.host != "phillipknaack.com")
+{
+    wholepage.innerHTML = "there is nothing here.";
+}
+
+    </script>
+
   </body>
 </html>
