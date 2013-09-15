@@ -1,9 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
   <head>
     <title> phillipknaack.com -- a pfk site </title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="shortcut icon"  href="/favicon.ico" />
     <style type="text/css">
       /*<![CDATA[*/
             body {
@@ -93,7 +93,12 @@
   </head>
   <body>
     <div id="wholepage">
-      <h1> <strong>phillipknaack.com</strong> -- a pfk site</h1>
+      <h1> <strong>phillipknaack.com</strong> -- a
+	<img src=pfk.png
+	     style="border:0; padding:0; margin:0;
+		    height:40px; vertical-align: text-bottom;" />
+	site
+	</h1>
       <div class="content">
 	<div class="alert">
           <h2> Welcome </h2>
@@ -214,16 +219,15 @@
       </div>
     </div>
     <script>
-
-var wholepage = document.getElementById("wholepage");
-
-if (location.host != "www.phillipknaack.com" &&
-    location.host != "phillipknaack.com")
-{
-    wholepage.innerHTML = "there is nothing here.";
-}
-
+      var wholepage = document.getElementById("wholepage");
+      if (location.host != "www.phillipknaack.com")
+      {
+          var redirect = 'https://www.phillipknaack.com/';
+          wholepage.innerHTML = "redirecting you to : " + redirect;
+          window.setTimeout(function() {
+              location.assign(redirect);
+          }, 1000);
+      }
     </script>
-
   </body>
 </html>

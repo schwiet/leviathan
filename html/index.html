@@ -1,8 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-
   <head>
+    <link rel="shortcut icon"  href="/favicon.ico" />
     <title id="titlebar">server at here</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   </head>
@@ -10,31 +9,28 @@
     <h1>Welcome to <strong id="header1">site</strong></h1>
     <div id="contents"> </div>
     <script>
-
-var titlebar = document.getElementById("titlebar");
-var header1 = document.getElementById("header1");
-var contents = document.getElementById("contents");
-titlebar.innerHTML = "welcome to " + location.host;
-header1.innerHTML = location.host;
-
-var redirect = null;
-
-if (location.host == "www.phillipknaack.com" ||
-    location.host == "phillipknaack.com")
-    redirect = 'https://www.phillipknaack.com' + location.pathname;
-
-if (redirect != null)
-{
-    contents.innerHTML = "redirecting you to : " + redirect;
-    window.setTimeout(function() {
-        location.assign(redirect);
-    }, 1000);
-}
-else
-{
-    contents.innerHTML = "there is nothing here";
-}
-
+      var titlebar = document.getElementById("titlebar");
+      var header1 = document.getElementById("header1");
+      var contents = document.getElementById("contents");
+      titlebar.innerHTML = "welcome to " + location.host;
+      header1.innerHTML = location.host;
+      var redirect = null;
+      if (location.host == "www.phillipknaack.com" ||
+          location.host == "phillipknaack.com")
+      {
+          redirect = 'https://www.phillipknaack.com' + location.pathname;
+      }
+      if (redirect != null)
+      {
+          contents.innerHTML = "redirecting you to : " + redirect;
+          window.setTimeout(function() {
+              location.assign(redirect);
+          }, 1000);
+      }
+      else
+      {
+          contents.innerHTML = "there is nothing here";
+      }
     </script>
   </body>
 </html>

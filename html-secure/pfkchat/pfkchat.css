@@ -27,6 +27,13 @@ a {
 .pageTitle-rs {
     font-size: 2em;
 }
+.pfkchatimg {
+    border:0;
+    padding:0;
+    margin:0;
+    height:40px;
+    vertical-align: text-bottom;
+}
 
 .wsStatus {
     text-align: center;
