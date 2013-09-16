@@ -2,6 +2,11 @@
 <div class="chatbox">
   <div class="chatbox-title">
     &nbsp;&nbsp;&nbsp;{{boxTitle}}
+    <div style="float:right">
+      <span class="chatplusminusx" ng-click="chatplus()">&nbsp;+&nbsp;</span>
+      <span class="chatplusminusx" ng-click="chatminus()">&nbsp;-&nbsp;</span>
+      <span class="chatplusminusx" ng-click="clearbutton()">&nbsp;X&nbsp;</span>
+    </div>
   </div>
   <div class="chattable-box">
     <table class="chattable">
@@ -20,5 +25,16 @@
       </tr>
     </table>
   </div>
+  <!-- 
+       Local Variables:
+       mode: html
+       indent-tabs-mode: nil
+       tab-width: 8
+       eval: (add-hook 'write-file-hooks 'time-stamp)
+       time-stamp-line-limit: 5
+       time-stamp-start: "lastModified = \""
+       time-stamp-format: "%:y/%02m/%02d  %02H:%02M:%02S\";"
+       time-stamp-end: "$"
+       End:
+    -->
 </div>
-

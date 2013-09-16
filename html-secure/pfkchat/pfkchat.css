@@ -116,6 +116,12 @@ a {
     border-radius:5px;
     padding:1px;
     margin:3px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 .chatbox-title {
     border-bottom:1px solid white;
@@ -127,7 +133,7 @@ a {
 .chattable-box {
     overflow-x:hidden;
     overflow-y:scroll;
-    height:20em;
+    height:5em;
 }
 .chattable {
     border-collapse:separate;
@@ -138,7 +144,23 @@ a {
 .chattable-msg {
     border:1px solid green;
     border-radius:5px;
-    width:400px;
+    -webkit-touch-callout: text;
+    -webkit-user-select: text;
+    -khtml-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
+
+.chatplusminusx {
+    border:1px solid green;
+    border-radius: 5px;
+    padding:0px;
+    margin:0px;
+}
+.chatplusminusx:hover {
+    border:1px solid red;
+    background:#202020;
 }
 
 .menu {

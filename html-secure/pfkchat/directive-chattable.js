@@ -2,13 +2,19 @@
 var chatTableDirective = function() {
 
     var scrollBox = null;
+    var scrollBoxParams = {
+        height : 400
+    };
 
 //    var newelement = angular.element('<some html />');
 
     var preLink = function(scope, iElement, iAttrs, controller) {
     }
     var postLink = function(scope, iElement, iAttrs, controller) {
+        console.log('postLink',controller);
         scrollBox = iElement.children(0)[1];
+        gScrollBox = scrollBox;
+        scrollBox.style.height = scrollBoxParams.height.toString() + "px";
     }
 
     var ret = {
@@ -25,7 +31,8 @@ var chatTableDirective = function() {
             messages : '=',
             myusername : '=',
             msgentry : '=',
-            msgentrykeyup : '='
+            msgentrykeyup : '=',
+            clearbutton : '='
         },
 // require: 'sibling' or '^parent'  (note new arg to link funcs)
         templateUrl : 'chatbox.html',
@@ -34,6 +41,21 @@ var chatTableDirective = function() {
         controller : function($scope, $element, $attrs, $transclude
 //                              , otherInjectables
                              ) {
+            directive_scope = this;
+            $scope.boxheight = 400;
+            $scope.chatplus = function() {
+                console.log('chatplus clicked');
+                scrollBoxParams.height += 100;
+                scrollBox.style.height =
+                    scrollBoxParams.height.toString() + "px";
+            }
+            $scope.chatminus = function() {
+                console.log('chatminus clicked');
+                scrollBoxParams.height -= 100;
+                scrollBox.style.height =
+                    scrollBoxParams.height.toString() + "px";
+            }
+
             $scope.$watchCollection('messages',function(newVals,oldVals) {
                 // for some reason setting scrollTop doesn't work
                 // inside watchCollection -- it's always off by some,
