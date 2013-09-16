@@ -5,8 +5,21 @@
     <meta content="utf-8" http-equiv="encoding">
     <link rel="stylesheet" type="text/css" href="pfkchat.css" />
     <title>PFK CHAT</title>
+    <script src=/js/Long.js> </script>
+    <script src=/js/ByteBuffer.js> </script>
+    <script src=/js/ProtoBuf.js> </script>
+    <script src=/js/angular-1.2.0-rc.2/angular.js> </script>
+    <script src=/js/angular-1.2.0-rc.2/angular-route.js> </script>
+    <script src=messages.js> </script>
+    <script src=service-data.js> </script>
+    <script src=service-websocket.js> </script>
+    <script src=directive-chattable.js> </script>
+    <script src=controller-ws.js> </script>
+    <script src=controller-login.js> </script>
+    <script src=controller-chat.js> </script>
+    <script src=pfkchat.js> </script>
   </head>
-  <body ng-app="pfkChatApp">
+  <body ng-cloak ng-app="pfkChatApp">
     <div class="pageTitle">
       <div class="pageTitle-l">
         <span class="pageTitle-ls"> www.phillipknaack.com/pfkchat </span>
@@ -24,19 +37,6 @@
       | PROTOVERSION: {{protoVersion}} ]
     </div>
     <div ng-view> </div>
-    <script src=/js/Long.js> </script>
-    <script src=/js/ByteBuffer.js> </script>
-    <script src=/js/ProtoBuf.js> </script>
-    <script src=/js/angular-1.2.0-rc.2/angular.js> </script>
-    <script src=/js/angular-1.2.0-rc.2/angular-route.js> </script>
-    <script src=messages.js> </script>
-    <script src=service-data.js> </script>
-    <script src=service-websocket.js> </script>
-    <script src=directive-chattable.js> </script>
-    <script src=controller-ws.js> </script>
-    <script src=controller-login.js> </script>
-    <script src=controller-chat.js> </script>
-    <script src=pfkchat.js> </script>
   </body>
 </html>
 
