@@ -15,8 +15,14 @@
             {{idle2min(user.idle)}} </td>
         </tr>
       </table>
-    </td> <td style="vertical-align:top">
-      <chattable message-object="immsgs_bcast" />
+    </td>
+    <td style="vertical-align:top">
+      <chattable box-title="Public Chat"
+                 input-width="400px"
+                 messages="data.immsgs_bcast"
+                 myusername="data.username"
+                 msgentry="data.msgentry"
+                 msgentrykeyup="msgentryKeyup"></chattable>
     </td>
   </tr>
 </table>

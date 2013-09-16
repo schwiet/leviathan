@@ -1,38 +1,62 @@
 
 var chatTableDirective = function() {
 
+    var scrollBox = null;
+
 //    var newelement = angular.element('<some html />');
-//    link : function(scope, templ, attribs, ^requires) {
-//        modify newelement somehow;
-//    }
-//    compile : function(templ) {
-//        templ.append(newelement);
-//        return link;
-//    }
+
+    var preLink = function(scope, iElement, iAttrs, controller) {
+    }
+    var postLink = function(scope, iElement, iAttrs, controller) {
+        scrollBox = iElement.children(0)[1];
+    }
 
     var ret = {
         restrict: "E",
         replace : true,
-        template : 
-            '<table class="chattable">' +
-            '  <tr ng-repeat="immsg in data.immsgs_bcast">' +
-            '    <td class="chattable-username">' +
-            '      {{immsg.username}} </td>' +
-            '    <td style="border:1px solid green;' +
-            '               border-radius:5px;">' +
-            '      {{immsg.msg}} </td>' +
-            '  </tr><tr>' +
-            '    <td class="chattable-msg" >' +
-            '      {{data.username}}' +
-            '    </td>' +
-            '    <td style="">' +
-            '      <input ng-keyup="msgentryKeyup($event)"' +
-            '             ng-model="data.msgentry" type="text"' +
-            '             autofocus size=70 />' +
-            '    </td>' +
-            '  </tr>' +
-            '</table>'
+        scope : {
+            // variables here can be substituted in the template!
+            // '@' means look at <chattable> attributes and copy.
+            // '=' means set up 2-way binding with variable name in
+            // parent scope (controller in this case)
+            // '&' means hook for function execution.
+            boxTitle : '@',
+            inputWidth : '@', // see ng-attr- in template
+            messages : '=',
+            myusername : '=',
+            msgentry : '=',
+            msgentrykeyup : '='
+        },
+// require: 'sibling' or '^parent'  (note new arg to link funcs)
+        templateUrl : 'chatbox.html',
+        // scope is this object's scope
+        // element is the template
+        controller : function($scope, $element, $attrs, $transclude
+//                              , otherInjectables
+                             ) {
+            $scope.$watchCollection('messages',function(newVals,oldVals) {
+                // for some reason setting scrollTop doesn't work
+                // inside watchCollection -- it's always off by some,
+                // probably because the box needs to redraw for scrollHeight
+                // to be updated? it works from a timer though.
+                window.setTimeout(function() {
+                    scrollBox.scrollTop = scrollBox.scrollHeight;
+                }, 100);
+            });
+        },
+
+        // templ is the chatbox.html elements.
+        // attrs is the attributes passed to <chattable>
+        compile : function(templ,attrs) {
+            //templ.append(new elements?)
+            return {
+                pre : preLink,
+                post : postLink
+            }
+        }
+
     };
+
     return ret;
 }
 

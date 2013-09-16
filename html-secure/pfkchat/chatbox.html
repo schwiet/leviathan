@@ -1,0 +1,24 @@
+
+<div class="chatbox">
+  <div class="chatbox-title">
+    &nbsp;&nbsp;&nbsp;{{boxTitle}}
+  </div>
+  <div class="chattable-box">
+    <table class="chattable">
+      <tr ng-repeat="immsg in messages">
+        <td class="chattable-username"> {{immsg.username}} </td>
+        <td class="chattable-msg"> {{immsg.msg}} </td>
+      </tr>
+      <tr>
+        <td class="chattable-username" > {{myusername}} </td>
+        <td>
+          <textarea ng-keyup="msgentrykeyup($event)"
+                    ng-model="msgentry" type="text"
+                    rows=1 autofocus ng-attr-style="width:{{inputWidth}};"
+                    ></textarea>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
