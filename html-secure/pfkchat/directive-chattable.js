@@ -83,8 +83,8 @@ var chatTableDirective = function() {
                 window.onmouseup = $scope.resizeUp;
                 window.onmousemove = $scope.resizeMove;
                 $scope.mouseDown = true;
-                $scope.startpos.x = evt.x;
-                $scope.startpos.y = evt.y;
+                $scope.startpos.x = evt.clientX;
+                $scope.startpos.y = evt.clientY;
                 $scope.startpos.px = params.width;
                 $scope.startpos.py = params.height;
             };
@@ -99,8 +99,8 @@ var chatTableDirective = function() {
                 $scope.$apply(function() {
                     if ($scope.mouseDown)
                     {
-                        var dx = evt.x - $scope.startpos.x;
-                        var dy = evt.y - $scope.startpos.y;
+                        var dx = evt.clientX - $scope.startpos.x;
+                        var dy = evt.clientY - $scope.startpos.y;
                         
                         params.width = $scope.startpos.px + dx;
                         params.height = $scope.startpos.py + dy;
