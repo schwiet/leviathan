@@ -17,9 +17,10 @@
       <tr>
         <td class="chattable-username" > {{myusername}} </td>
         <td>
-          <textarea ng-keyup="msgentrykeyup($event)"
+          <textarea class="msgentrytextarea"
+                    ng-keyup="msgentrykeyup($event)"
                     ng-model="msgentry" type="text"
-                    rows=1 autofocus ng-attr-style="width:{{inputWidth}};"
+                    rows=1 autofocus ng-attr-fauxstyle="width:{{inputWidth}};"
                     ></textarea>
         </td>
       </tr>

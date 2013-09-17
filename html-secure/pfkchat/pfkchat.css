@@ -112,6 +112,9 @@ a {
 }
 
 .chatbox {
+    position:relative;
+    width:600px;
+    height:300px;
     border:1px solid white;
     border-radius:5px;
     padding:1px;
@@ -124,6 +127,7 @@ a {
     user-select: none;
 }
 .chatbox-title {
+    height:22px;
     border-bottom:1px solid white;
     background:#203040;
     padding:5px;
@@ -133,9 +137,14 @@ a {
 .chattable-box {
     overflow-x:hidden;
     overflow-y:scroll;
-    height:5em;
+    position:absolute;
+    top:40px;
+    left:0;
+    right:0;
+    bottom:0;
 }
 .chattable {
+    width:100%;
     border-collapse:separate;
 }
 .chattable-username {
@@ -151,7 +160,6 @@ a {
     -ms-user-select: text;
     user-select: text;
 }
-
 .chatplusminusx {
     border:1px solid green;
     border-radius: 5px;
@@ -161,6 +169,11 @@ a {
 .chatplusminusx:hover {
     border:1px solid red;
     background:#202020;
+}
+.msgentrytextarea {
+    width:98%;
+    border:0;
+    margin:0;
 }
 
 .menu {

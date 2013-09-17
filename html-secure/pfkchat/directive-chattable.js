@@ -1,8 +1,9 @@
 
 var chatTableDirective = function() {
 
-    var scrollBox = null;
-    var scrollBoxParams = {
+    var params = {
+        box : null,
+        scrollbox : null,
         height : 400
     };
 
@@ -12,9 +13,10 @@ var chatTableDirective = function() {
     }
     var postLink = function(scope, iElement, iAttrs, controller) {
         console.log('postLink',controller);
-        scrollBox = iElement.children(0)[1];
-        gScrollBox = scrollBox;
-        scrollBox.style.height = scrollBoxParams.height.toString() + "px";
+        gBoxParams = params;
+        params.box = iElement;
+        params.scrollbox = iElement.children(0)[1];
+        params.box.css("height",params.height.toString() + "px");
     }
 
     var ret = {
@@ -44,16 +46,12 @@ var chatTableDirective = function() {
             directive_scope = this;
             $scope.boxheight = 400;
             $scope.chatplus = function() {
-                console.log('chatplus clicked');
-                scrollBoxParams.height += 100;
-                scrollBox.style.height =
-                    scrollBoxParams.height.toString() + "px";
+                params.height += 100;
+                params.box.css("height",params.height.toString() + "px");
             }
             $scope.chatminus = function() {
-                console.log('chatminus clicked');
-                scrollBoxParams.height -= 100;
-                scrollBox.style.height =
-                    scrollBoxParams.height.toString() + "px";
+                params.height -= 100;
+                params.box.css("height",params.height.toString() + "px");
             }
 
             $scope.$watchCollection('messages',function(newVals,oldVals) {
@@ -62,7 +60,8 @@ var chatTableDirective = function() {
                 // probably because the box needs to redraw for scrollHeight
                 // to be updated? it works from a timer though.
                 window.setTimeout(function() {
-                    scrollBox.scrollTop = scrollBox.scrollHeight;
+                    params.scrollbox.scrollTop =
+                        params.scrollbox.scrollHeight;
                 }, 100);
             });
         },
