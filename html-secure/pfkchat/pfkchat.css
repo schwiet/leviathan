@@ -165,6 +165,9 @@ a {
     border-radius: 5px;
     padding:0px;
     margin:0px;
+    display:inline-block;
+    text-align: center;
+    width:25px;
 }
 .chatplusminusx:hover {
     border:1px solid red;
