@@ -4,6 +4,7 @@ var chatTableDirective = function() {
     var params = {
         box : null,
         scrollbox : null,
+        width : 600,
         height : 400
     };
 
@@ -15,7 +16,11 @@ var chatTableDirective = function() {
         console.log('postLink',controller);
         gBoxParams = params;
         params.box = iElement;
+        // could use angular.element( .. ) here, but
+        // i haven't figured out how to access scrollTop in an
+        // angular element.
         params.scrollbox = iElement.children(0)[1];
+        params.box.css("width",params.width.toString() + "px");
         params.box.css("height",params.height.toString() + "px");
     }
 
@@ -44,13 +49,14 @@ var chatTableDirective = function() {
 //                              , otherInjectables
                              ) {
             directive_scope = this;
-            $scope.boxheight = 400;
             $scope.chatplus = function() {
                 params.height += 100;
+                params.box.css("width",params.width.toString() + "px");
                 params.box.css("height",params.height.toString() + "px");
             }
             $scope.chatminus = function() {
                 params.height -= 100;
+                params.box.css("width",params.width.toString() + "px");
                 params.box.css("height",params.height.toString() + "px");
             }
 
@@ -64,6 +70,48 @@ var chatTableDirective = function() {
                         params.scrollbox.scrollHeight;
                 }, 100);
             });
+
+            $scope.mouseDown = false;
+            $scope.oldMouseUp = null;
+            $scope.oldMouseMove = null;
+            $scope.startpos = { x : 0, y : 0,
+                                px : 0, py : 0 };
+
+            $scope.resizeDown = function(evt) {
+                $scope.oldMouseUp = window.onmouseup;
+                $scope.oldMouseMove = window.onmousemove;
+                window.onmouseup = $scope.resizeUp;
+                window.onmousemove = $scope.resizeMove;
+                $scope.mouseDown = true;
+                $scope.startpos.x = evt.x;
+                $scope.startpos.y = evt.y;
+                $scope.startpos.px = params.width;
+                $scope.startpos.py = params.height;
+            };
+            $scope.resizeUp = function(evt) {
+                $scope.$apply(function() {
+                    $scope.mouseDown = false;
+                    window.onmouseup = $scope.oldMouseUp;
+                    window.onmousemove = $scope.oldMouseMove;
+                });
+            };
+            $scope.resizeMove = function(evt) {
+                $scope.$apply(function() {
+                    if ($scope.mouseDown)
+                    {
+                        var dx = evt.x - $scope.startpos.x;
+                        var dy = evt.y - $scope.startpos.y;
+                        
+                        params.width = $scope.startpos.px + dx;
+                        params.height = $scope.startpos.py + dy;
+                        
+                        params.box.css("width",
+                                       params.width.toString() + "px");
+                        params.box.css("height",
+                                       params.height.toString() + "px");
+                    }
+                });
+            };
         },
 
         // templ is the chatbox.html elements.

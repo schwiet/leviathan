@@ -26,6 +26,26 @@
       </tr>
     </table>
   </div>
+  <!-- these don't work very well, because if there's lag and
+       the mouse moves outside the box before the box can move,
+       then we 'loose' the box and we have to move the mouse back
+       to the box to pick it up again. we only get mouseUp and
+       mouseMove events from the box if the mouse is IN the box.
+       so instead, resizeDown registers a window.onmousemove/up
+       hook and resizeUp removes these hooks.  registering these
+       events at the window level means we'll get them no matter
+       what happens to the mouse and the box (w.r.t. lag).
+       ng-mouseup="resizeUp($event)"
+       no-ng-mousemove="resizeMove($event)" -->
+  <div style="float:right;
+              position:absolute;
+              height:20px;
+              width:20px;
+              background:blue;
+              bottom:0;
+              right:0;"
+       ng-mousedown="resizeDown($event)"
+       ></div>
   <!-- 
        Local Variables:
        mode: html

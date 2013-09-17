@@ -113,8 +113,8 @@ a {
 
 .chatbox {
     position:relative;
-    width:600px;
-    height:300px;
+    width:600px;  /* these are overwritten */
+    height:300px;  /* these are overwritten */
     border:1px solid white;
     border-radius:5px;
     padding:1px;
